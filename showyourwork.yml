@@ -35,6 +35,44 @@ dependencies:
   #   - src/data/dataset_for_my_script.dat
   # src/tex/ms.tex:
   #   - src/tex/stylesheet.tex
+  src/tex/ms.tex:
+    - src/tex/table_notation_fourier.tex
+    - src/tex/overview.tex
+    - src/tex/gp_solver_speed_benchmark.tex
+    - src/tex/banded_vs_full_benchmark.tex
+    - src/tex/pgm.tex
+    - src/tex/output/kernel_accuracy_benchmark.tex
+    - src/tex/kernel_speed_benchmark.tex
+    - src/tex/output/simulated_posterior_table.tex
+    - src/tex/references.bib
+    # Run every derivation notebook in the build, including the ones the text doesn't link to
+    - src/tex/output/derivations/derive_fourier_cosine.tex
+    - src/tex/output/derivations/derive_fourier_gamma.tex
+    - src/tex/output/derivations/derive_fourier_trapezoid.tex
+    - src/tex/output/derivations/derive_kernel_exponential.tex
+    - src/tex/output/derivations/derive_kernel_sigmoid.tex
+    - src/tex/output/derivations/derive_R_Gamma.tex
+    - src/tex/output/derivations/derive_R_Gamma_asymmetric.tex
+    # Check the equation registry against ms.tex, the notebooks and spotgp in every build
+    - src/tex/output/equation_checks.tex
+    - src/tex/output/equation_icons.tex
+  # Timed on a GPU by compute_benchmark_tinygp_vs_spotgp.py, outside the build
+  src/scripts/plot_benchmark_tinygp_vs_spotgp.py:
+    - src/data/benchmark_tinygp_vs_spotgp.npz
+  src/scripts/plot_simulated_posteriors.py:
+    - src/data/results_simulated_dynesty_mean/tsim_365.0_tsamp_1.0_inc_90.0_peq_5.0/dynesty_results.npz
+    - src/data/results_simulated_dynesty_mean/tsim_1460.0_tsamp_1.0_inc_90.0_peq_5.0/dynesty_results.npz
+    - src/data/results_simulated_dynesty_mean/tsim_365.0_tsamp_1.0_inc_30.0_peq_5.0/dynesty_results.npz
+    - src/data/results_simulated_dynesty_mean/tsim_1460.0_tsamp_1.0_inc_30.0_peq_5.0/dynesty_results.npz
+  src/scripts/plot_simulated_kernel_posteriors.py:
+    - src/data/results_simulated_dynesty_mean/tsim_365.0_tsamp_1.0_inc_90.0_peq_5.0/dynesty_results.npz
+    - src/data/results_simulated_dynesty_mean/tsim_365.0_tsamp_1.0_inc_90.0_peq_5.0/simulated_data.npz
+    - src/data/results_simulated_dynesty_mean/tsim_1460.0_tsamp_1.0_inc_90.0_peq_5.0/dynesty_results.npz
+    - src/data/results_simulated_dynesty_mean/tsim_1460.0_tsamp_1.0_inc_90.0_peq_5.0/simulated_data.npz
+    - src/data/results_simulated_dynesty_mean/tsim_365.0_tsamp_1.0_inc_30.0_peq_5.0/dynesty_results.npz
+    - src/data/results_simulated_dynesty_mean/tsim_365.0_tsamp_1.0_inc_30.0_peq_5.0/simulated_data.npz
+    - src/data/results_simulated_dynesty_mean/tsim_1460.0_tsamp_1.0_inc_30.0_peq_5.0/dynesty_results.npz
+    - src/data/results_simulated_dynesty_mean/tsim_1460.0_tsamp_1.0_inc_30.0_peq_5.0/simulated_data.npz
 
 # Name of the `.tex` manuscript and corresponding `.pdf` article
 ms_name: ms
@@ -55,7 +93,7 @@ overleaf:
   # List of files to pull from Overleaf
   pull:
     - src/tex/ms.tex
-    - src/tex/bib.bib
+    - src/tex/references.bib
 
 # Always require all input files to be present on disk for workflow to pass?
 require_inputs: true
@@ -103,3 +141,9 @@ verbose: false
 
 # Version of `showyourwork` used to create this workflow
 version: 0.4.3
+
+# Work around a showyourwork 0.4.3 bug: preprocess.py reads this key to skip
+# graphics the class file includes itself (the AASTeX ORCID icon) but never sets it,
+# so any \author[orcid] fails with KeyError: 'tex_files_out'.
+tex_files_out:
+  - src/tex/orcid-ID.png

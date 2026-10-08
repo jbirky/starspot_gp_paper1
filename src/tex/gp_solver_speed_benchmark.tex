@@ -1,0 +1,18 @@
+\begin{table}[ht!]
+    \centering
+    \caption{GPSolver wall-clock time and peak memory as a function of the number of data points $N$. \textit{Build}: covariance matrix + Cholesky factorization. \textit{Log-likelihood}: JIT-compiled evaluation (kernel + Cholesky + solve) as called during MCMC. \textit{Predict}: predictive mean at 200 test points. Times are the median of 5 runs after JIT warmup. Memory is the peak RSS increase during each operation, measured in an isolated subprocess.}
+    \label{tab:gp_solver_speed}
+    \begin{tabular}{rcccccc}
+    \toprule
+    & \multicolumn{2}{c}{Build} & \multicolumn{2}{c}{Log-likelihood} & \multicolumn{2}{c}{Predict} \\
+    \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+    $N$ & Time [s] & Memory & Time [s] & Memory & Time [s] & Memory \\
+    \midrule
+    10 & 0.0810 & $17\,\text{MB}$ & 0.0001 & $0.1\,\text{MB}$ & 0.1749 & $29\,\text{MB}$ \\
+    100 & 0.0900 & $17\,\text{MB}$ & 0.0057 & $0.1\,\text{MB}$ & 0.2116 & $29\,\text{MB}$ \\
+    1000 & 0.3546 & $137\,\text{MB}$ & 0.1416 & $0.1\,\text{MB}$ & 0.2892 & $38\,\text{MB}$ \\
+    5000 & 8.4480 & $3.57\,\text{GB}$ & 3.0122 & $503\,\text{MB}$ & 0.7084 & $246\,\text{MB}$ \\
+    10000 & 31.9826 & $14.16\,\text{GB}$ & 12.3798 & $1.97\,\text{GB}$ & 1.7840 & $882\,\text{MB}$ \\
+    \bottomrule
+    \end{tabular}
+\end{table}

@@ -1,2 +1,10 @@
 # Don't track TeX temporaries
 *latexindent*
+*.aux
+*.bbl
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+ms.pdf

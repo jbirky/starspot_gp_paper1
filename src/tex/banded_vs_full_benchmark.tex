@@ -1,0 +1,20 @@
+\begin{table}[ht!]
+    \centering
+    \caption{GPSolver wall-clock time: \texttt{cholesky\_full} vs.\ \texttt{cholesky\_banded} (JAX backend). \textit{Build}: kernel evaluation + Cholesky factorization. \textit{Predict}: GP predictive mean at 200 test points. Times are the median of 3 runs after JIT warmup. The full Cholesky solver scales as $\mathcal{O}(N^3)$ and becomes impractical for $N \gtrsim 10^4$; the banded solver scales as $\mathcal{O}(Nb^2)$ and handles $N = 10^5$ in seconds.}
+    \label{tab:banded_vs_full}
+    \begin{tabular}{rr cc cc c}
+    \toprule
+    & & \multicolumn{2}{c}{Full Cholesky} & \multicolumn{2}{c}{Banded Cholesky} & \\
+    \cmidrule(lr){3-4} \cmidrule(lr){5-6}
+    $x_{\max}$ [d] & $N$ & Build & Predict & Build & Predict & Speedup \\
+    \midrule
+    10 & 100 & $333\,\text{ms}$ & $493\,\text{ms}$ & $535\,\text{ms}$ & $589\,\text{ms}$ & $0.6\times$ \\
+    50 & 500 & $458\,\text{ms}$ & $669\,\text{ms}$ & $587\,\text{ms}$ & $639\,\text{ms}$ & $0.8\times$ \\
+    100 & 1{,}000 & $732\,\text{ms}$ & $761\,\text{ms}$ & $595\,\text{ms}$ & $734\,\text{ms}$ & $1.2\times$ \\
+    500 & 5{,}000 & $16.9\,\text{s}$ & $2.66\,\text{s}$ & $810\,\text{ms}$ & $773\,\text{ms}$ & $20.8\times$ \\
+    1{,}000 & 10{,}000 & $36.2\,\text{s}$ & $9.55\,\text{s}$ & $957\,\text{ms}$ & $1.02\,\text{s}$ & $37.8\times$ \\
+    5{,}000 & 50{,}000 & --- & --- & $2.52\,\text{s}$ & $2.52\,\text{s}$ & --- \\
+    10{,}000 & 100{,}000 & --- & --- & $4.47\,\text{s}$ & $4.56\,\text{s}$ & --- \\
+    \bottomrule
+    \end{tabular}
+\end{table}

@@ -1,6 +1,25 @@
+channels:
+  - conda-forge
 dependencies:
-  - conda-forge::numpy=1.19.2
-  - conda-forge::pip=21.0.1
-  - conda-forge::python=3.9
+  - python=3.13
+  - numpy=2.3.5
+  - scipy=1.16.3
+  - pandas=2.3.3
+  - matplotlib=3.10.6
+  - tqdm=4.67.1
+  - astropy=7.1.1
+  - h5py=3.15.1
+  - sympy=1.14.0
+  # executing the derivation notebooks (src/scripts/run_derivation.py)
+  - nbclient=0.10.2
+  - nbformat=5.10.4
+  - ipykernel=6.31.0
+  - pip
   - pip:
-      - matplotlib==3.4.3
+      - jax[cpu]==0.10.0
+      - dynesty==3.0.0
+      - corner==2.2.3
+      - tinygp
+      - george
+      # pinned so the cached snakemake env is rebuilt whenever spotgp is bumped
+      - spotgp @ git+https://github.com/jbirky/spotgp.git@0ce9db3288af4a2c75302b301db8a5da064178ce

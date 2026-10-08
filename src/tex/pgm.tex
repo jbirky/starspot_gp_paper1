@@ -1,0 +1,83 @@
+\begin{figure*}
+\centering
+\begin{tikzpicture}[
+  param/.style={circle, draw, semithick, minimum size=10mm, inner sep=0pt, font=\small},
+  obs/.style={circle, draw, semithick, fill=gray!20, minimum size=10mm, inner sep=0pt, font=\small},
+  det/.style={rectangle, draw, semithick, rounded corners=2pt, minimum height=9mm, inner sep=3pt, font=\small},
+  plate/.style={draw, semithick, dashed, rounded corners=3pt, inner sep=6pt},
+  arr/.style={-{Stealth[length=4pt]}, thin},
+]
+
+% === Row 1: Physical parameters (y=0) ===
+\node[param, minimum size=11mm] (Peq) at (0, 0)    {\scriptsize $P_{\rm eq}$};
+\node[param] (kap) at (2.2, 0)   {\scriptsize $\kappa$};
+\node[param] (inc) at (4.0, 0)   {\scriptsize $I$};
+\node[param] (ell) at (6.5, 0)   {\scriptsize $\ell_{\rm sp}$};
+\node[param] (tau) at (8.5, 0)   {\scriptsize $\tau_{\rm sp}$};
+\node[param] (sig) at (11.5, 0)  {\scriptsize $\sigma_k$};
+
+% Group labels
+\node[font=\scriptsize\itshape, text=gray!60!black] at (2.1, 1.05)  {rotation};
+\node[font=\scriptsize\itshape, text=gray!60!black] at (7.5, 1.05)  {evolution};
+\node[font=\scriptsize\itshape, text=gray!60!black] at (11.5, 1.05) {amplitude};
+
+% Brackets around parameter groups
+\draw[thin, gray!60!black] (-0.55, 0.55) -- (-0.55, 0.72) -- (4.55, 0.72) -- (4.55, 0.55);
+\draw[thin, gray!60!black] (5.95, 0.55) -- (5.95, 0.72) -- (9.05, 0.72) -- (9.05, 0.55);
+\draw[thin, gray!60!black] (10.95, 0.55) -- (10.95, 0.72) -- (12.05, 0.72) -- (12.05, 0.55);
+
+% Fixed nodes (to the left of the kernel block)
+\node[circle, fill=black, minimum size=3pt, inner sep=0pt] (pPhi) at (2.0, -2.4) {};
+\node[font=\scriptsize, anchor=east] at (1.8, -2.4) {$p(\Phi)$};
+\node[circle, fill=black, minimum size=3pt, inner sep=0pt] (ulimb) at (2.0, -3.2) {};
+\node[font=\scriptsize, anchor=east] at (1.8, -3.2) {$u$};
+
+% === Row 2: Photometric kernel (y=-2.8) ===
+\node[det] (K) at (5.5, -2.8) {$\mathcal{K}_{\rm spot}(\tau)$};
+
+\foreach \p in {Peq, kap, inc, ell, tau, sig}
+  \draw[arr] (\p) -- (K);
+\draw[arr] (pPhi) -- (K);
+\draw[arr] (ulimb) -- (K);
+
+% === Row 3: Observable (y=-5.5) ===
+\node[param] (sn)  at (3.0, -5.5) {\footnotesize $\sigma_n$};
+\node[obs]   (F)   at (5.5, -5.5) {\footnotesize $F_i$};
+\node[plate, fit=(F), label={[font=\tiny]below right:{$N_t$}}] {};
+
+\draw[arr] (K) -- (F);
+\draw[arr] (sn) -- (F);
+
+% === Node-type legend ===
+\node[param, minimum size=6mm]  (L1) at (1.0, -7.5) {};
+\node[font=\scriptsize, anchor=west] at (1.45, -7.5) {free parameter};
+\node[obs, minimum size=6mm]    (L2) at (4.5, -7.5) {};
+\node[font=\scriptsize, anchor=west] at (4.95, -7.5) {observed};
+\node[det, minimum height=6mm, inner sep=2pt] (L3) at (8.0, -7.5) {};
+\node[font=\scriptsize, anchor=west] at (8.45, -7.5) {deterministic};
+\node[circle, fill=black, minimum size=3pt, inner sep=0pt] (L4) at (11.5, -7.5) {};
+\node[font=\scriptsize, anchor=west] at (11.7, -7.5) {fixed};
+
+% === Variable definitions ===
+\draw[gray!40, thin] (-0.5, -8.3) -- (13.0, -8.3);
+
+\node[font=\scriptsize, anchor=west, text=gray!70!black] at (-0.5, -8.8)  {$P_{\rm eq}$: equatorial rotation period};
+\node[font=\scriptsize, anchor=west, text=gray!70!black] at (6.5, -8.8)   {$\sigma_k$: variability amplitude};
+
+\node[font=\scriptsize, anchor=west, text=gray!70!black] at (-0.5, -9.3)  {$\kappa$: diff.\ rotation shear};
+\node[font=\scriptsize, anchor=west, text=gray!70!black] at (6.5, -9.3)   {$\sigma_n$: photometric noise};
+
+\node[font=\scriptsize, anchor=west, text=gray!70!black] at (-0.5, -9.8)  {$I$: stellar inclination};
+\node[font=\scriptsize, anchor=west, text=gray!70!black] at (6.5, -9.8)   {$p(\Phi)$: spot latitude distribution};
+
+\node[font=\scriptsize, anchor=west, text=gray!70!black] at (-0.5, -10.3) {$\ell_{\rm sp}$: spot active lifetime};
+\node[font=\scriptsize, anchor=west, text=gray!70!black] at (6.5, -10.3)  {$u$: limb darkening coefficient};
+
+\node[font=\scriptsize, anchor=west, text=gray!70!black] at (-0.5, -10.8) {$\tau_{\rm sp}$: spot decay timescale};
+
+\node[font=\scriptsize, anchor=west, text=gray!70!black] at (-0.5, -11.3) {$F_i$: photometric flux};
+
+\end{tikzpicture}
+\caption{Probabilistic graphical model for the photometric starspot GP. Free parameters (open circles) determine the photometric kernel $\mathcal{K}_{\rm spot}(\tau)$ (Equation~\ref{eq:kernel_full}), which governs the temporal covariance of the flux observations $F_i$ across $N_t$ epochs. The rotation parameters ($P_{\rm eq}$, $\kappa$, $I$) control the harmonic structure, the evolution parameters ($\ell_{\rm sp}$, $\tau_{\rm sp}$) control the temporal envelope $R_\Gamma(\tau)$, and the amplitude parameter $\sigma_k$ controls the overall variability level. The spot latitude distribution $p(\Phi)$ and limb darkening coefficient $u$ (filled dots) enter the kernel as fixed inputs from stellar models.}
+\label{fig:pgm}
+\end{figure*}

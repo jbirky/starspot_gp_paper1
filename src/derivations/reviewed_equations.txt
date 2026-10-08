@@ -1,0 +1,143 @@
+% The LaTeX of each registry equation (src/derivations/equations.py) as it read in
+% ms.tex when its spec was last checked against it. Written by
+%     python src/scripts/check_equations.py --accept <label>
+% Don't edit by hand.
+%% eqn:trapezoid
+\frac{\alpha_{\rm trap}(t)}{\alpha_{\mathrm{max}}}
+    = \mathcal{I}^{-1} [\Delta t_1 \mathsf{H}(\Delta t_1) - \Delta t_2 \mathsf{H}(\Delta t_2)]  - \mathcal{E}^{-1} [\Delta t_3 \mathsf{H}(\Delta t_3) - \Delta t_4 \mathsf{H}(\Delta t_4)],
+%% eq:alpha_exp
+\alpha_{\rm exp}(t) = \alpha_{\max} \times
+\begin{cases}
+    e^{(t - t_1)/\tau_{\rm em}} & t < t_1 \quad\text{(exponential rise)} \\[4pt]
+    1 & t_1 \leq t \leq t_2 \quad\text{(plateau)} \\[4pt]
+    e^{-(t - t_2)/\tau_{\rm dec}} & t > t_2 \quad\text{(exponential decay)}
+\end{cases}
+%% eq:cn_edgeon
+c_n =
+\cos\Phi
+\begin{cases}
+    1 / \pi & n = 0 \\[4pt]
+    1 / 4 & n = \pm 1 \\[4pt]
+    \displaystyle \frac{(-1)^{|n|/2+1}}{\pi(n^2 - 1)} & n = \pm 2, \pm 4, \pm 6, \ldots \\[6pt]
+    0 & n = \pm 3, \pm 5, \pm 7, \ldots
+\end{cases}
+%% eq:cn_general
+\boxed{
+c_n = \frac{1}{2\pi}\int_{-\theta_{\rm vis}}^{\theta_{\rm vis}} \big(b_0 + b_1\cos\theta\big)\, e^{-in\theta}\, d\theta
+= \frac{1}{\pi}\left[\frac{b_0\sin(n\,\theta_{\rm vis})}{n} + \frac{b_1}{2}\left(\frac{\sin\big((n-1)\theta_{\rm vis}\big)}{n-1} + \frac{\sin\big((n+1)\theta_{\rm vis}\big)}{n+1}\right)\right]
+}
+%% eq:Gamma_hat
+\FT{\Gamma}(\omega) = \frac{4}{\tau_{\rm spot}^2\,\omega^3}
+\left[
+    \tau_{\rm spot}\,\omega\cos\!\left(\frac{\omega\,\ell_{\rm spot}}{2}\right)
+    + \sin\!\left(\frac{\omega\,\ell_{\rm spot}}{2}\right)
+    - \sin\!\left(\frac{\omega\,\ell_{\rm spot}}{2} + \omega\,\tau_{\rm spot}\right)
+\right].
+%% eq:Gamma_exp
+\Gamma(t) =
+\begin{cases}
+    e^{2t/\tau_{\rm em}} & t < 0 \\
+    1 & 0 \leq t \leq \tau_{\rm plat} \\
+    e^{-2(t - \tau_{\rm plat})/\tau_{\rm dec}} & t > \tau_{\rm plat}
+\end{cases}
+%% eq:Gamma_hat_exp_R
+\FT{\Gamma}_R(\omega) =
+    \frac{2\tau_{\rm em}}{4 + \omega^2\tau_{\rm em}^2}
+    + \frac{\sin(\omega\tau_{\rm plat})}{\omega}
+    + \frac{2\tau_{\rm dec}\cos(\omega\tau_{\rm plat})}{4 + \omega^2\tau_{\rm dec}^2}
+    - \frac{\omega\tau_{\rm dec}^2\sin(\omega\tau_{\rm plat})}{4 + \omega^2\tau_{\rm dec}^2}
+%% eq:Gamma_hat_exp_I
+\FT{\Gamma}_I(\omega) =
+    -\frac{\omega\tau_{\rm em}^2}{4 + \omega^2\tau_{\rm em}^2}
+    + \frac{1 - \cos(\omega\tau_{\rm plat})}{\omega}
+    + \frac{\omega\tau_{\rm dec}^2\cos(\omega\tau_{\rm plat})}{4 + \omega^2\tau_{\rm dec}^2}
+    + \frac{2\tau_{\rm dec}\sin(\omega\tau_{\rm plat})}{4 + \omega^2\tau_{\rm dec}^2}
+%% eq:theta_vis_inc
+\theta_{\rm vis}(I,\Phi) = \arccos\!\big(-\cot I\,\tan\Phi\big),
+%% eq:cn_inc
+c_n(I,\Phi) = \frac{1}{\pi}\left[
+    \frac{\cos I\sin\Phi}{n}\,\sin\!\big(n\,\theta_{\rm vis}\big)
+    + \frac{\sin I\cos\Phi}{2}\left(
+        \frac{\sin\!\big((n-1)\theta_{\rm vis}\big)}{n-1}
+      + \frac{\sin\!\big((n+1)\theta_{\rm vis}\big)}{n+1}
+    \right)\right].
+%% eq:kernel_n2
+\mathcal{K}(\tau) = \sigma_k^2\, R_\Gamma(\tau) \left[
+    \langle |c_0|^2 \rangle_\Phi
+    + 2\langle |c_1|^2 \rangle_\Phi \cos(\omega_0\tau)
+    + 2\langle |c_2|^2 \rangle_\Phi \cos(2\omega_0\tau)
+\right],
+%% eq:kernel_edgeon_closed
+\mathcal{K}(\tau) = \sigma_k^2\, R_\Gamma(\tau) \left[
+    \frac{1}{2\pi^2}
+    + \frac{1}{16}\cos(\omega_0\tau)
+    + \frac{1}{9\pi^2}\cos(2\omega_0\tau)
+\right]
+\quad (I = \pi/2,\; \kappa = 0).
+%% eq:theta_vis
+|\omega_0 t + \Lambda_0| < \theta_{\rm vis}, \qquad \theta_{\rm vis} = \arccos\!\left(-\frac{b_0}{b_1}\right).
+%% eq:cn_integral
+c_n = \frac{1}{T}\int_0^T \mathcal{V}(t)\, e^{-in\omega_0 t}\, dt = \frac{1}{2\pi}\int_{-\theta_{\rm vis}}^{\theta_{\rm vis}} \big(b_0 + b_1\cos\theta\big)\, e^{-in\theta}\, d\theta,
+%% eq:cn_split
+c_n = \frac{1}{2\pi}\left[b_0\int_{-\theta_{\rm vis}}^{\theta_{\rm vis}} e^{-in\theta}\, d\theta + b_1\int_{-\theta_{\rm vis}}^{\theta_{\rm vis}} \cos\theta\; e^{-in\theta}\, d\theta\right].
+%% eq:cn_int_const
+\int_{-\theta_{\rm vis}}^{\theta_{\rm vis}} e^{-in\theta}\, d\theta = \left[\frac{e^{-in\theta}}{-in}\right]_{-\theta_{\rm vis}}^{\theta_{\rm vis}} = \frac{e^{-in\theta_{\rm vis}} - e^{in\theta_{\rm vis}}}{-in} = \frac{2\sin(n\,\theta_{\rm vis})}{n}.
+%% eq:cn_int_cos
+\int_{-\theta_{\rm vis}}^{\theta_{\rm vis}} \cos\theta\; e^{-in\theta}\, d\theta = \frac{\sin\big((1-n)\theta_{\rm vis}\big)}{1-n} + \frac{\sin\big((1+n)\theta_{\rm vis}\big)}{1+n}.
+%% eq:cn_result
+c_n = \frac{1}{\pi}\left[\frac{b_0\sin(n\,\theta_{\rm vis})}{n} + \frac{b_1}{2}\left(\frac{\sin\big((n-1)\theta_{\rm vis}\big)}{n-1} + \frac{\sin\big((n+1)\theta_{\rm vis}\big)}{n+1}\right)\right],
+%% eq:alpha_piecewise
+\alpha(t) = \alpha_{\max}
+\begin{cases}
+    0 & t < -\tfrac{\ell_{\rm spot}}{2} - \tau_{\rm spot} \\[4pt]
+    \displaystyle\frac{t + \tfrac{\ell_{\rm spot}}{2} + \tau_{\rm spot}}{\tau_{\rm spot}}
+        & -\tfrac{\ell_{\rm spot}}{2} - \tau_{\rm spot} \leq t < -\tfrac{\ell_{\rm spot}}{2} \\[6pt]
+    1 & -\tfrac{\ell_{\rm spot}}{2} \leq t \leq \tfrac{\ell_{\rm spot}}{2} \\[4pt]
+    \displaystyle\frac{-t + \tfrac{\ell_{\rm spot}}{2} + \tau_{\rm spot}}{\tau_{\rm spot}}
+        & \tfrac{\ell_{\rm spot}}{2} < t \leq \tfrac{\ell_{\rm spot}}{2} + \tau_{\rm spot} \\[6pt]
+    0 & t > \tfrac{\ell_{\rm spot}}{2} + \tau_{\rm spot}
+\end{cases}
+%% eq:Gamma_piecewise
+\Gamma(t) = \frac{\alpha^2(t)}{\alpha_{\max}^2} =
+\begin{cases}
+    0 & |t| > \ell/2 + \tau \\[4pt]
+    \displaystyle\left(\frac{|t| - \ell/2 - \tau}{-\tau}\right)^{\!2}
+        & \ell/2 < |t| \leq \ell/2 + \tau \\[8pt]
+    1 & |t| \leq \ell/2
+\end{cases}
+%% eq:I1_plateau
+I_1 = \frac{\sin(\omega\ell/2)}{\omega}.
+%% eq:J_ibp
+J = \left[-\frac{(b-t)\cos(\omega t)}{\omega}\right]_a^b - \frac{1}{\omega}\int_a^b \cos(\omega t)\,dt
+= \frac{\tau\cos(\omega\ell/2)}{\omega} - \frac{\sin(\omega b) - \sin(\omega\ell/2)}{\omega^2}.
+%% eq:I2_ramp
+I_2 = -\frac{\sin(\omega\ell/2)}{\omega} + \frac{2\cos(\omega\ell/2)}{\tau\omega^2} - \frac{2\big[\sin\!\big(\frac{\omega\ell}{2}+\omega\tau\big) - \sin\!\big(\frac{\omega\ell}{2}\big)\big]}{\tau^2\omega^3}.
+%% eq:I1_plus_I2
+I_1 + I_2 = \frac{2\cos(\omega\ell/2)}{\tau\omega^2} + \frac{2\sin(\omega\ell/2)}{\tau^2\omega^3} - \frac{2\sin\!\big(\frac{\omega\ell}{2}+\omega\tau\big)}{\tau^2\omega^3}.
+%% eq:Gamma_hat_direct
+\FT{\Gamma}(\omega) = \frac{4}{\tau^2\omega^3}\left[\tau\omega\cos\!\left(\frac{\omega\ell}{2}\right) + \sin\!\left(\frac{\omega\ell}{2}\right) - \sin\!\left(\frac{\omega\ell}{2} + \omega\tau\right)\right].
+%% eq:R_Gamma_closed
+\boxed{
+R_\Gamma(\tau) =
+\begin{cases}
+    \displaystyle \ell + \frac{2\tau_{\rm s}}{5}
+    - \frac{4\tau^2}{3\tau_{\rm s}}
+    + \frac{2\tau^3}{3\tau_{\rm s}^2}
+    - \frac{\tau^5}{15\tau_{\rm s}^4}
+    & 0 \leq \tau \leq \tau_{\rm s} \\[12pt]
+    \displaystyle \ell + \frac{2\tau_{\rm s}}{3} - \tau
+    & \tau_{\rm s} \leq \tau \leq \ell \\[12pt]
+    P_3(\tau)
+    & \ell \leq \tau \leq \ell + \tau_{\rm s} \\[12pt]
+    \displaystyle \frac{(\ell + 2\tau_{\rm s} - \tau)^5}{30\,\tau_{\rm s}^4}
+    & \ell + \tau_{\rm s} \leq \tau \leq \ell + 2\tau_{\rm s} \\[12pt]
+    0 & \tau > \ell + 2\tau_{\rm s}
+\end{cases}
+}
+%% eq:P3
+P_3(\tau) &= \frac{\tau^5}{30\tau_{\rm s}^4}
+- \frac{(\ell + 2\tau_{\rm s})\,\tau^4}{6\tau_{\rm s}^4}
++ \frac{(\ell^2 + 4\ell\tau_{\rm s} + 2\tau_{\rm s}^2)\,\tau^3}{3\tau_{\rm s}^4} \notag \\
+&\quad - \frac{\ell(\ell^2 + 6\ell\tau_{\rm s} + 6\tau_{\rm s}^2)\,\tau^2}{3\tau_{\rm s}^4}
++ \frac{(\ell^4 + 8\ell^3\tau_{\rm s} + 12\ell^2\tau_{\rm s}^2 - 6\tau_{\rm s}^4)\,\tau}{6\tau_{\rm s}^4} \notag \\
+&\quad + \frac{-\ell^5 - 10\ell^4\tau_{\rm s} - 20\ell^3\tau_{\rm s}^2 + 30\ell\tau_{\rm s}^4 + 20\tau_{\rm s}^5}{30\tau_{\rm s}^4}.

@@ -1,3 +1,12 @@
 # Nothing in this folder should be tracked by git
 *
 !.gitignore
+
+# ...except precomputed results that are too expensive to regenerate in the build,
+# or that need a GPU
+!crb_sobol_sweep_365_4096.csv
+!results_simulated_dynesty_mean/
+!results_simulated_dynesty_mean/*/
+!results_simulated_dynesty_mean/*/dynesty_results.npz
+!results_simulated_dynesty_mean/*/simulated_data.npz
+!benchmark_tinygp_vs_spotgp.npz
