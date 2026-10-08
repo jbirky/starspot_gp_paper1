@@ -8,15 +8,33 @@ jobs:
     runs-on: ubuntu-latest
     name: Build the article PDF
     concurrency: showyourwork-${{ github.ref }}
+    permissions:
+      # push the PDF to the <branch>-pdf branch
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
+      # showyourwork 0.4.3 runs Snakemake 7, which breaks on Python >= 3.12, but
+      # showyourwork-action installs the latest Miniconda (Python 3.14). The action
+      # skips its own install when ~/.conda exists, so install a Python 3.10 conda
+      # first. Miniforge3 24.3.0-0 is the last release with a Python 3.10 base.
+      - name: Install conda (Python 3.10)
+        run: |
+          wget --no-verbose https://github.com/conda-forge/miniforge/releases/download/24.3.0-0/Miniforge3-24.3.0-0-Linux-x86_64.sh -O "$RUNNER_TEMP/miniforge.sh"
+          bash "$RUNNER_TEMP/miniforge.sh" -b -p ~/.conda
+          ~/.conda/bin/conda config --add pkgs_dirs ~/conda_pkgs_dir
+
+      # v1 is a 2022 tag whose bundled @actions/cache and @actions/artifact use
+      # GitHub services that have been shut down; main has the updated clients.
       - name: Build the article PDF
         id: build
-        uses: showyourwork/showyourwork-action@v1
+        uses: showyourwork/showyourwork-action@9987603860836147f19f5022b902c2d43e7268e4
+        with:
+          # Match the local build env (Snakemake 7 also breaks with pulp >= 2.8)
+          showyourwork-spec: showyourwork==0.4.3 pulp==2.7.0
         env:
           SANDBOX_TOKEN: ${{ secrets.SANDBOX_TOKEN }}
           OVERLEAF_EMAIL: ${{ secrets.OVERLEAF_EMAIL }}
