@@ -24,6 +24,13 @@ jobs:
           bash "$RUNNER_TEMP/miniforge.sh" -b -p ~/.conda
           ~/.conda/bin/conda config --add pkgs_dirs ~/conda_pkgs_dir
 
+      # The figure scripts render text with matplotlib's text.usetex and cmbright,
+      # which need a system LaTeX (the runner has none).
+      - name: Install LaTeX for matplotlib
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q --no-install-recommends texlive-latex-extra texlive-fonts-extra cm-super dvipng
+
       # v1 is a 2022 tag whose bundled @actions/cache and @actions/artifact use
       # GitHub services that have been shut down; main has the updated clients.
       - name: Build the article PDF
