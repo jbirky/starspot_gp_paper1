@@ -9,6 +9,11 @@ jobs:
   process-pr:
     runs-on: ubuntu-latest
     name: Process pull request
+    permissions:
+      # download the build artifact, push the PR's PDF branch, comment on the PR
+      actions: read
+      contents: write
+      pull-requests: write
     steps:
       - name: Process pull request
-        uses: showyourwork/showyourwork-action/process-pull-request@v1
+        uses: showyourwork/showyourwork-action/process-pull-request@9987603860836147f19f5022b902c2d43e7268e4

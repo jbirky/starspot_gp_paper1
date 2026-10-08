@@ -466,7 +466,7 @@ Together, these allow us to obtain the autocovariance kernel $\mathcal{K}(\tau)$
 % ------------------------------------------------------------------------
 \subsection{Approach to Derivation}
 
-By Eq.~\eqref{eq:A_smallspot} and the flux model (Eq.~\ref{eqn:flux_model}), a single dark spot dims the star by $A(t)/\pi = \alpha_{\max}^2\,\Gamma(t)\,\mathcal{V}(t)$. The constant $\alpha_{\max}^2$ passes unchanged through every Fourier transform below, so in this section we write $A(t) \equiv \Gamma(t)\,\mathcal{V}(t)$ for the unit-amplitude single-spot signal; the kernel $\mathcal{K}(\tau)$ of the flux is $\alpha_{\max}^4$ times its autocorrelation. The autocorrelation function of function $A(t)$ is equivalent to taking the convolution between $A(t)$ and a lagged version of the function. By the convolution property (\ref{ft:convolution}), convolution in the time domain is multiplication in the frequency domain. Here $\mathcal{F}\{A(t)\} = \hat{A}(\omega)$ denotes the Fourier transform of a function $A(t)$, and $\mathcal{F}^{-1}\{\hat{A}(\omega)\} = A(t)$ denotes the inverse Fourier transform.
+By Eq.~\eqref{eq:A_smallspot} and the flux model (Eq.~\ref{eqn:flux_model}), a single dark spot dims the star by $A(t)/\pi = \alpha_{\max}^2\,\Gamma(t)\,\mathcal{V}(t)$. The constant $\alpha_{\max}^2$ passes unchanged through every Fourier transform below, so in this section we write $A(t) \equiv \Gamma(t)\, \cdot \, \mathcal{V}(t)$ for the unit-amplitude single-spot signal; the kernel $\mathcal{K}(\tau)$ of the flux is $\alpha_{\max}^4$ times its autocorrelation. The autocorrelation function of function $A(t)$ is equivalent to taking the convolution between $A(t)$ and a lagged version of the function. By the convolution property (\ref{ft:convolution}), convolution in the time domain is multiplication in the frequency domain. Here $\mathcal{F}\{A(t)\} = \hat{A}(\omega)$ denotes the Fourier transform of a function $A(t)$, and $\mathcal{F}^{-1}\{\hat{A}(\omega)\} = A(t)$ denotes the inverse Fourier transform.
 So the Fourier transform of the kernel function is:
 \begin{align}
     \mathcal{F}\{\mathcal{K}(\tau) \}
@@ -1296,7 +1296,7 @@ In this Section, we compare the analytic kernel derived in Section~\ref{sec:kern
 
 Table~\ref{tab:kernel_mse} summarizes the parameter combinations tested and the mean squared error (MSE) between the analytic and numerical autocorrelation functions. For each row, a single parameter is varied from its baseline value ($P_{\rm eq} = 5$~d, $\kappa = 0$, $I = 90^\circ$, $\ell_{\rm spot} = 15$~d, $\tau_{\rm spot} = 3$~d, $\alpha_{\max} = 0.1$~rad), with $N_{\rm spot} = 10$ held fixed throughout. 
 
-\input{output/kernel_accuracy_benchmark.tex}
+\variable{output/kernel_accuracy_benchmark.tex}
 \input{kernel_speed_benchmark.tex}
 
 Figures~\ref{fig:kernel_vary_grid} shows the analytic vs.\ numerical kernel comparison for each parameter variation. In all cases, the analytic kernel closely matches the numerical kernel, with MSE values on the order of $10^{-3}$ or smaller. Overall, these results validate our analytic kernel against numerical simulations across a range of physically relevant parameters.
@@ -1968,7 +1968,7 @@ Table~\ref{tab:equation_checks} lists the equations marked with \EquationCheckIc
 \label{tab:equation_checks}
 \footnotesize
 \setlength{\tabcolsep}{5pt}
-\input{output/equation_checks.tex}
+\variable{output/equation_checks.tex}
 \end{table*}
 
 \end{document}
