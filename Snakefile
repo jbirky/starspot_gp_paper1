@@ -49,6 +49,23 @@ rule simulated_posterior_table:
     shell:
         "python {input[0]} {output}"
 
+# The solver and kernel benchmark tables. The timings depend on the machine, and the
+# banded-vs-full run needs a GPU, so they are run by hand (compute_benchmark_*.py) and
+# their results kept in src/data, with the hardware and versions they were run with.
+rule benchmark_tables:
+    input:
+        "src/scripts/table_benchmarks.py",
+        "src/data/benchmark_gp_solver.json",
+        "src/data/benchmark_banded_vs_full.json",
+        "src/data/benchmark_kernel_speed.json",
+    output:
+        "src/tex/output/gp_solver_speed_benchmark.tex",
+        "src/tex/output/banded_vs_full_benchmark.tex",
+        "src/tex/output/kernel_speed_benchmark.tex",
+        "src/tex/output/gp_solver_loglike_n1000.tex",
+    shell:
+        "python {input[0]} {output}"
+
 # Each derivation notebook asserts its results against the equations in ms.tex, so
 # this rule fails if a derivation no longer matches the paper. The output is a link
 # to the notebook that ms.tex includes with \variable. A notebook that takes its

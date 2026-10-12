@@ -38,11 +38,12 @@ dependencies:
   src/tex/ms.tex:
     - src/tex/table_notation_fourier.tex
     - src/tex/overview.tex
-    - src/tex/gp_solver_speed_benchmark.tex
-    - src/tex/banded_vs_full_benchmark.tex
+    - src/tex/output/gp_solver_speed_benchmark.tex
+    - src/tex/output/banded_vs_full_benchmark.tex
     - src/tex/pgm.tex
     - src/tex/output/kernel_accuracy_benchmark.tex
-    - src/tex/kernel_speed_benchmark.tex
+    - src/tex/output/kernel_speed_benchmark.tex
+    - src/tex/output/gp_solver_loglike_n1000.tex
     - src/tex/output/simulated_posterior_table.tex
     - src/tex/references.bib
     # Run every derivation notebook in the build, including the ones the text doesn't link to
