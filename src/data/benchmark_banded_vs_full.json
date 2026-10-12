@@ -1,0 +1,130 @@
+{
+  "params": {
+    "hparam": {
+      "peq": 5.0,
+      "kappa": 0.0,
+      "inc": 1.5707963267948966,
+      "lspot": 15.0,
+      "tau_spot": 3.0,
+      "sigma_k": 0.01
+    },
+    "n_harmonics": 3,
+    "n_lat": 64,
+    "dt": 0.1,
+    "n_full_max": 10000,
+    "yerr": 0.0001,
+    "n_predict": 200,
+    "n_repeats": 3
+  },
+  "rows": [
+    {
+      "xmax": 10,
+      "N": 100,
+      "solver": "full",
+      "build_s": 0.01611400954425335,
+      "loglike_s": 0.0005855802446603775,
+      "predict_s": 0.025912141427397728
+    },
+    {
+      "xmax": 10,
+      "N": 100,
+      "solver": "banded",
+      "build_s": 0.017201361246407032,
+      "loglike_s": 0.0012503322213888168,
+      "predict_s": 0.024432910606265068
+    },
+    {
+      "xmax": 50,
+      "N": 500,
+      "solver": "full",
+      "build_s": 0.017375323921442032,
+      "loglike_s": 0.0018841857090592384,
+      "predict_s": 0.023773327469825745
+    },
+    {
+      "xmax": 50,
+      "N": 500,
+      "solver": "banded",
+      "build_s": 0.021602243185043335,
+      "loglike_s": 0.005391478538513184,
+      "predict_s": 0.025449255481362343
+    },
+    {
+      "xmax": 100,
+      "N": 1000,
+      "solver": "full",
+      "build_s": 0.019758153706789017,
+      "loglike_s": 0.0036140866577625275,
+      "predict_s": 0.028561271727085114
+    },
+    {
+      "xmax": 100,
+      "N": 1000,
+      "solver": "banded",
+      "build_s": 0.0247521810233593,
+      "loglike_s": 0.007941078394651413,
+      "predict_s": 0.0295246634632349
+    },
+    {
+      "xmax": 500,
+      "N": 5000,
+      "solver": "full",
+      "build_s": 0.11216953117400408,
+      "loglike_s": 0.07811767235398293,
+      "predict_s": 0.09742596466094255
+    },
+    {
+      "xmax": 500,
+      "N": 5000,
+      "solver": "banded",
+      "build_s": 0.05261604767292738,
+      "loglike_s": 0.03184209018945694,
+      "predict_s": 0.07286043092608452
+    },
+    {
+      "xmax": 1000,
+      "N": 10000,
+      "solver": "full",
+      "build_s": null,
+      "loglike_s": 0.49930836632847786,
+      "predict_s": null
+    },
+    {
+      "xmax": 1000,
+      "N": 10000,
+      "solver": "banded",
+      "build_s": 0.09032489266246557,
+      "loglike_s": 0.06418670993298292,
+      "predict_s": 0.1262965565547347
+    },
+    {
+      "xmax": 5000,
+      "N": 50000,
+      "solver": "banded",
+      "build_s": 0.3238649517297745,
+      "loglike_s": 0.2673029024153948,
+      "predict_s": null
+    },
+    {
+      "xmax": 10000,
+      "N": 100000,
+      "solver": "banded",
+      "build_s": 0.6148704113438725,
+      "loglike_s": 0.559326259419322,
+      "predict_s": null
+    }
+  ],
+  "provenance": {
+    "date": "2026-10-09T07:23:27+00:00",
+    "script": "compute_benchmark_banded_vs_full.py",
+    "device": "NVIDIA GeForce RTX 5070 Ti",
+    "cpu": "AMD EPYC 7742 64-Core Processor",
+    "python": "3.14.3",
+    "spotgp": "1.3.0",
+    "spotgp_commit": "0ce9db3288af4a2c75302b301db8a5da064178ce",
+    "jax": "0.9.1",
+    "jaxlib": "0.9.1",
+    "numpy": "2.4.2",
+    "paper_commit": "01197234f775e65b9ae5192c0140b1dd72f7e69c-dirty"
+  }
+}

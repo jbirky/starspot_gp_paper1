@@ -1,0 +1,79 @@
+{
+  "params": {
+    "hparam": {
+      "peq": 5.0,
+      "kappa": 0.0,
+      "inc": 1.5707963267948966,
+      "lspot": 15.0,
+      "tau_spot": 3.0,
+      "sigma_k": 0.01
+    },
+    "n_harmonics": 3,
+    "n_lat": 64,
+    "matrix_solver": "cholesky_full",
+    "t_span": 100.0,
+    "yerr": 0.0001,
+    "n_predict": 200,
+    "n_repeats": 5
+  },
+  "rows": [
+    {
+      "N": 10,
+      "build_s": 0.008612941950559616,
+      "build_MB": 0.40960000000001173,
+      "loglike_s": 0.00020762626081705093,
+      "loglike_MB": 0.08192000000002508,
+      "predict_s": 0.016999920830130577,
+      "predict_MB": 4.227072000000021
+    },
+    {
+      "N": 100,
+      "build_s": 0.03340908233076334,
+      "build_MB": 11.751424000000043,
+      "loglike_s": 0.02013704739511013,
+      "loglike_MB": 0.15974400000004607,
+      "predict_s": 0.19518793188035488,
+      "predict_MB": 82.07974399999989
+    },
+    {
+      "N": 1000,
+      "build_s": 4.490979106165469,
+      "build_MB": 2150.682624,
+      "loglike_s": 1.949409468099475,
+      "loglike_MB": 284.327936,
+      "predict_s": 1.810753919184208,
+      "predict_MB": 824.0824319999999
+    },
+    {
+      "N": 5000,
+      "build_s": 111.35349580738693,
+      "build_MB": 52810.493952000004,
+      "loglike_s": 45.65727328136563,
+      "loglike_MB": 674.0582400000003,
+      "predict_s": 8.925773235969245,
+      "predict_MB": 4120.109056
+    },
+    {
+      "N": 10000,
+      "build_s": 250.65668022539467,
+      "build_MB": 134406.893568,
+      "loglike_s": 183.48156027588993,
+      "loglike_MB": 706.8549119999989,
+      "predict_s": 19.15602987445891,
+      "predict_MB": 8223.8464
+    }
+  ],
+  "provenance": {
+    "date": "2026-10-09T07:06:06+00:00",
+    "script": "compute_benchmark_gp_solver.py",
+    "device": "1 core of AMD EPYC 7742 64-Core Processor",
+    "cpu": "AMD EPYC 7742 64-Core Processor",
+    "python": "3.13.15",
+    "spotgp": "1.3.0",
+    "spotgp_commit": "0ce9db3288af4a2c75302b301db8a5da064178ce",
+    "jax": "0.10.0",
+    "jaxlib": "0.10.0",
+    "numpy": "2.3.5",
+    "paper_commit": "01197234f775e65b9ae5192c0140b1dd72f7e69c-dirty"
+  }
+}
