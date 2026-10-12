@@ -1,161 +1,75 @@
 """
-Benchmark kernel computation speed: analytic vs. numerical (Monte Carlo).
+Benchmark of the kernel computation time (Table tab:kernel_speed): the analytic kernel
+(AnalyticKernel.kernel on N lags) against the numerical Monte Carlo kernel
+(NumericalKernel: N_sim simulated lightcurves of N points over T_SIM days, and the
+average of their autocovariance), for each N_sim in NSIM.
 
-  1. Analytic kernel   (spotgp/src/analytic_kernel.py)
-  2. Numerical kernel  (spotgp/src/numerical_kernel.py)
+Everything runs on one CPU core. An analytic time is the median of N_REPEATS calls
+after a warm-up call that JIT-compiles; a numerical kernel, which takes seconds, is
+timed once.
 
-Tests multiple lag-array sizes for the analytic kernel and a fixed
-configuration for the numerical MC kernel, then reports the speedup.
+Run by hand with the pinned spotgp, since the timings depend on the machine; e.g. in
+the showyourwork env:
+    python compute_benchmark_kernel_speed.py
+table_benchmarks.py makes the table from the result.
 
 Output:
-    output/kernel_speed_benchmark.csv
-    output/kernel_speed_benchmark.tex
+    data/benchmark_kernel_speed.json
 """
-import sys
 import time
+
+import benchmarking
+benchmarking.use_cpu()
+
 import numpy as np
-import pandas as pd
+import jax
+jax.config.update("jax_enable_x64", True)
+
 import paths
+from spotgp.analytic_kernel import AnalyticKernel
+from spotgp.numerical_kernel import NumericalKernel
 
-# Compat shim for older numpy
-if not hasattr(np, 'trapezoid'):
-    np.trapezoid = np.trapz
-
-# ── Import implementations ────────────────────────────────────
-sys.path.insert(0, str(paths.root.parent.parent / "packages" / "spotgp" / "src"))
-from analytic_kernel import AnalyticKernel
-from numerical_kernel import generate_sims, avg_covariance_tlag
-
-# ── Parameters ──────────────────────────────────────────────────
-hparam = dict(
-    peq=5.0,
-    kappa=0.0,
-    inc=np.pi / 2,
-    nspot=10,
-    lspot=15.0,
-    tau=3.0,
-    alpha_max=0.1,
-    fspot=0.0,
-)
-
+HPARAM = dict(peq=5.0, kappa=0.0, inc=np.pi / 2, nspot=10, lspot=15.0, tau_spot=3.0,
+              alpha_max=0.1, fspot=0.0)
 N_HARMONICS = 3
-NSIM = 200        # number of MC simulations for numerical kernel
-TSIM = 100        # simulation duration [days]
-TSAMP = 0.05      # sampling cadence [days]
-N_REPEATS = 5     # number of timing repeats (take median)
-
-# Lag array sizes to test
-lag_sizes = [50, 100, 500, 1000, 5000]
+N_VALUES = (50, 100, 500, 1000, 5000)  # lags (analytic) = time points per simulation (numerical)
+NSIM = (200, 500)                      # simulations per numerical kernel
+T_SIM = 100.0                          # simulated baseline [d]
+N_REPEATS = 5
+OUTPUT = paths.data / "benchmark_kernel_speed.json"
 
 
-# ── Timing utilities ────────────────────────────────────────────
-def time_func(func, n_repeats=N_REPEATS):
-    """Time a function, return median wall-clock time in seconds."""
-    times = []
-    for _ in range(n_repeats):
-        t0 = time.perf_counter()
-        result = func()
-        t1 = time.perf_counter()
-        times.append(t1 - t0)
-    return np.median(times), result
+def time_analytic(n):
+    kernel = AnalyticKernel(HPARAM, n_harmonics=N_HARMONICS)
+    lag = np.linspace(0, T_SIM, n)
+    call = lambda: jax.block_until_ready(kernel.kernel(lag))
+    call()  # warm-up: JIT compilation
+    return benchmarking.median_time(call, N_REPEATS)
 
 
-# ── Benchmark: Analytic kernel ──────────────────────────────────
-def bench_analytic(n_lags):
-    tau = np.linspace(0, TSIM, n_lags)
-    ak = AnalyticKernel(hparam, n_harmonics=N_HARMONICS)
-    dt, _ = time_func(lambda: ak.kernel(tau))
+def time_numerical(n, nsim):
+    np.random.seed(42)
+    t0 = time.perf_counter()
+    kernel = NumericalKernel(HPARAM, tsim=T_SIM, tsamp=T_SIM / n, nsim=nsim, verbose=False)
+    dt = time.perf_counter() - t0
+    assert len(kernel.tarr) == n, f"{len(kernel.tarr)} simulated points, expected {n}"
     return dt
 
 
-# ── Benchmark: Numerical kernel (MC) ────────────────────────────
-NSIM_500 = 500
-
-def bench_numerical(n_lags, nsim=NSIM):
-    """Full MC: generate_sims + cov + avg_covariance_tlag.
-    Adjusts tsamp so the simulation produces n_lags time points."""
-    theta = [hparam["peq"], hparam["kappa"], hparam["inc"], hparam["nspot"]]
-    tsamp = TSIM / n_lags
-
-    def _run():
-        fluxes = generate_sims(
-            theta, nsim=nsim,
-            tem=hparam["tau"], tdec=hparam["tau"],
-            alpha_max=hparam["alpha_max"],
-            lspot=hparam["lspot"],
-            tsim=TSIM, tsamp=tsamp,
-        )
-        K = np.cov(fluxes.T)
-        k_tau = avg_covariance_tlag(K)
-        return k_tau
-
-    dt, _ = time_func(_run, n_repeats=1)  # MC is expensive, run once
-    return dt
+def main():
+    benchmarking.check_spotgp_pin()
+    rows = []
+    for n in N_VALUES:
+        row = dict(N=n, analytic_s=time_analytic(n))
+        for nsim in NSIM:
+            row[f"numerical_{nsim}_s"] = time_numerical(n, nsim)
+        rows.append(row)
+        print(f"N={n:>5d}  analytic {row['analytic_s']:.4f} s  "
+              + "  ".join(f"numerical({nsim}) {row[f'numerical_{nsim}_s']:.2f} s" for nsim in NSIM))
+    params = dict(hparam=HPARAM, n_harmonics=N_HARMONICS, nsim=NSIM, t_sim=T_SIM,
+                  n_repeats=N_REPEATS)
+    benchmarking.save(OUTPUT, params, rows, device=f"1 core of {benchmarking.cpu_name()}")
 
 
-# ── Run benchmarks ──────────────────────────────────────────────
-print("=" * 60)
-print("Kernel Speed Benchmark: Analytic vs. Numerical")
-print("=" * 60)
-
-rows = []
-for n_lags in lag_sizes:
-    dt_ana = bench_analytic(n_lags)
-    dt_num200 = bench_numerical(n_lags, nsim=NSIM)
-    dt_num500 = bench_numerical(n_lags, nsim=NSIM_500)
-    sp200 = dt_num200 / dt_ana
-    sp500 = dt_num500 / dt_ana
-    print(f"  n_lags={n_lags:>5d}:  analytic={dt_ana:.4f}  "
-          f"num200={dt_num200:.2f} ({sp200:.0f}x)  "
-          f"num500={dt_num500:.2f} ({sp500:.0f}x)")
-    rows.append(dict(n_lags=n_lags, analytic_s=dt_ana,
-                     numerical_200_s=dt_num200, speedup_200=sp200,
-                     numerical_500_s=dt_num500, speedup_500=sp500))
-
-# ── Save CSV ────────────────────────────────────────────────────
-df = pd.DataFrame(rows)
-csv_path = paths.output / "kernel_speed_benchmark.csv"
-csv_path.parent.mkdir(parents=True, exist_ok=True)
-df.to_csv(csv_path, index=False, float_format="%.4g")
-print(f"\nSaved CSV to {csv_path}")
-
-# ── Generate LaTeX table ────────────────────────────────────────
-lines = []
-lines.append(r"\begin{table}[ht!]")
-lines.append(r"    \centering")
-lines.append(r"    \caption{Kernel computation wall-clock time. "
-             r"The analytic kernel is evaluated at varying lag-array sizes; "
-             r"the numerical (Monte Carlo) kernel uses "
-             + str(NSIM) + r" and " + str(NSIM_500) +
-             r" simulations over " + str(TSIM) + r"~d. "
-             r"All times in seconds.}")
-lines.append(r"    \label{tab:kernel_speed}")
-lines.append(r"    \begin{tabular}{rccccc}")
-lines.append(r"    \toprule")
-lines.append(r"    & & \multicolumn{2}{c}{$N_{\rm sim}=200$}"
-             r" & \multicolumn{2}{c}{$N_{\rm sim}=500$} \\")
-lines.append(r"    \cmidrule(lr){3-4} \cmidrule(lr){5-6}")
-lines.append(r"    $N_{\rm lags}$ & Analytic [s] & "
-             r"Numerical [s] & Speedup & "
-             r"Numerical [s] & Speedup \\")
-lines.append(r"    \midrule")
-
-for _, row in df.iterrows():
-    lines.append(f"    {int(row['n_lags'])} & {row['analytic_s']:.4f} & "
-                 f"{row['numerical_200_s']:.2f} & "
-                 f"{row['speedup_200']:.0f}$\\times$ & "
-                 f"{row['numerical_500_s']:.2f} & "
-                 f"{row['speedup_500']:.0f}$\\times$ \\\\")
-
-lines.append(r"    \bottomrule")
-lines.append(r"    \end{tabular}")
-lines.append(r"\end{table}")
-
-tex_str = "\n".join(lines)
-tex_path = paths.output / "kernel_speed_benchmark.tex"
-with open(tex_path, "w") as f:
-    f.write(tex_str)
-print(f"Saved LaTeX to {tex_path}")
-
-# Print for convenience
-print("\n" + tex_str)
+if __name__ == "__main__":
+    main()
