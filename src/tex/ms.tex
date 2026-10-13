@@ -1,34 +1,32 @@
 \PassOptionsToPackage{dvipsnames}{xcolor}
 \documentclass[preprint]{aastex702}
 \usepackage{showyourwork}
-% Margin icons on the verified equations. When every check passes, check_equations.py writes
-% output/equation_icons.tex: an \addvalue{<label>_check}{<notebook>} line per registry equation.
-% Each such \label then gets \EquationCheckSymbol in the margin, linking to its notebook; other
-% labels keep showyourwork's icons (the GitHub logo on figures).
-\newcommand\EquationCheckSymbol{\faCheckCircle}
-\definecolor{equation-check}{rgb}{0.10,0.50,0.22}  % green (#1A7F37), distinct from showyourwork's blue icons
-\newcommand\EquationCheckIcon{{\color{equation-check}\EquationCheckSymbol}\xspace}
+% Notebooks in notebooks/ that accompany a section. Each gets a file-code icon in the margin at
+% the section's \label, linking to the notebook, and the section cites it in a footnote with
+% \NotebookLink. The key is <label>_notebook, not showyourwork's <label>_script (which draws a
+% GitHub icon): the label format below draws the file-code icon for those labels and leaves every
+% other label to showyourwork.
+\providecommand\addvalue[2]{}  % undefined in showyourwork's preprocessing pass
 \makeatletter
 \ifdefined\usevalue  % the compile pass (showyourwork's preprocessing pass has its own label format)
-  \LetLtxMacro\eqcheck@sywlabelformat\showkeyslabelformat
+  % fontawesome5 and the github-icon color come from showyourwork's compile-pass setup
+  \LetLtxMacro\notebook@sywlabelformat\showkeyslabelformat
   \renewcommand\showkeyslabelformat[1]{%
-    \IfEq*{\usevalue{#1_check}}{KEYNOTFOUND}{\eqcheck@sywlabelformat{#1}}{%
+    \IfEq*{\usevalue{#1_notebook}}{KEYNOTFOUND}{\notebook@sywlabelformat{#1}}{%
       \normalfont\raisebox{0pt}[6pt][0pt]{%
-        \href{\GitHubURL/blob/\GitHubSHA/\usevalue{#1_check}}{\color{equation-check}\EquationCheckSymbol}}}}
+        \href{\GitHubURL/blob/\GitHubSHA/\usevalue{#1_notebook}}{%
+          \color{github-icon}\faFileCode}}}}
 \fi
 \makeatother
-\IfFileExists{output/equation_icons.tex}{\input{output/equation_icons.tex}}{}
-% Notebooks in notebooks/ that accompany a section. Each gets a GitHub icon in the margin at the
-% section's \label, linking to the notebook (showyourwork draws one at every \label with a
-% <label>_script value), and the section cites it in a footnote with \NotebookLink.
-\providecommand\addvalue[2]{}  % undefined in showyourwork's preprocessing pass
 \newcommand\NotebookLink[1]{\href{\GitHubURL/blob/\GitHubSHA/notebooks/#1}{\texttt{\detokenize{#1}}}}
-\addvalue{subsec:ft_cosine_script}{notebooks/ft_spot_rotation.ipynb}
-\addvalue{subsec:ft_envelope_script}{notebooks/ft_squared_trapezoid.ipynb}
-\addvalue{subsec:averaging_script}{notebooks/averaging_random_params.ipynb}
-\addvalue{subsec:kernel_anal_case_script}{notebooks/closed_form_kernel_n2.ipynb}
-\addvalue{subsec:harmonic_n2_script}{notebooks/lower_envelope.ipynb}
-\addvalue{app:fourier_trapezoid_script}{notebooks/ft_trapezoid.ipynb}
+\addvalue{subsec:ft_cosine_notebook}{notebooks/derive_ft_spot_rotation.ipynb}
+\addvalue{subsec:ft_envelope_notebook}{notebooks/derive_ft_squared_trapezoid.ipynb}
+\addvalue{subsec:averaging_notebook}{notebooks/derive_averaging_random_params.ipynb}
+\addvalue{subsec:kernel_anal_case_notebook}{notebooks/derive_closed_form_kernel_n2.ipynb}
+\addvalue{subsec:harmonic_n2_notebook}{notebooks/lower_envelope_executed.ipynb}
+\addvalue{app:fourier_visibility_notebook}{notebooks/derive_ft_spot_rotation.ipynb}
+\addvalue{app:fourier_trapezoid_notebook}{notebooks/derive_ft_trapezoid.ipynb}
+\addvalue{app:acf_trapezoid_notebook}{notebooks/derive_R_Gamma.ipynb}
 
 \usepackage{theorem}
 \usepackage{amsmath}
@@ -142,7 +140,7 @@ Although there are approaches for forward modeling surfaces with spots, inferrin
 A Gaussian process \citep[GP;][]{rasmussen_gaussian_2006} offers an alternative approach that treats starspot variability as a stochastic process and models the \emph{distribution} of spot properties rather than individual spots.
 GPs have become a standard tool for modeling stellar rotation \citep{angus_inferring_2018,foreman-mackey_fast_2017,gordon_stellar_2021}, but the most widely used quasi-periodic (QP) kernel has no parameter that encodes differential rotation, meaning that any differential rotation signal is absorbed into the other hyperparameters in an uncontrolled way. \citealt{nicholson_quasi-periodic_2022} systematically tested the mapping between QP kernel hyperparameters and physical spot properties, finding that while the rotation period and evolution timescale are reliably recovered, the harmonic complexity parameter has no intuitive physical interpretation. These results collectively motivate the development of a physically grounded GP kernel: one whose hyperparameters map directly to measurable stellar properties including differential rotation.
 
-In this paper, we derive a physically motivated GP kernel for stellar rotation from first principles. Starting from an analytic starspot model \citep{kipping_analytic_2012}, we obtain a closed-form kernel function that naturally encodes the effects of spot geometry, evolution, and differential rotation. We validate the analytic kernel against numerical Monte Carlo simulations, demonstrate that it captures harmonic structure and non-sinusoidal periodicity absent in standard quasi-periodic and simple harmonic oscillator kernels, and show that it provides significant computational speedups over numerical approaches. The paper is organized as follows: Section~\ref{sec:lightcurve} describes the lightcurve model, Section~\ref{sec:kernel_derivation} derives the GP kernel, Section~\ref{sec:mcmc} presents the \code{JAX} implementation of the kernel and MCMC inference framework, Section~\ref{sec:results} validates the analytic kernel against numerical results, Section~\ref{sec:discussion} discusses the physical interpretability of our results with intuitive visualizations, and the Appendix Section provides detailed derivations and \code{sympy} validation notebooks. Equations marked with \EquationCheckIcon in the margin are verified with \code{SymPy} against their derivation and, for the \code{spotgp} functions listed in Appendix~\ref{app:equation_checks}, numerically against \code{spotgp}; the icon links to the verifying notebook, and Appendix~\ref{app:equation_checks} lists all verified equations. A companion paper (J. Birky et al. 2026, in preparation; hereafter Paper~II) extends the kernel with additive composite terms for several coexisting spot populations and for non-spot variability, and applies the full framework to the four-year \kepler lightcurve of Kepler-63.
+In this paper, we derive a physically motivated GP kernel for stellar rotation from first principles. Starting from an analytic starspot model \citep{kipping_analytic_2012}, we obtain a closed-form kernel function that naturally encodes the effects of spot geometry, evolution, and differential rotation. We validate the analytic kernel against numerical Monte Carlo simulations, demonstrate that it captures harmonic structure and non-sinusoidal periodicity absent in standard quasi-periodic and simple harmonic oscillator kernels, and show that it provides significant computational speedups over numerical approaches. The paper is organized as follows: Section~\ref{sec:lightcurve} describes the lightcurve model, Section~\ref{sec:kernel_derivation} derives the GP kernel, Section~\ref{sec:mcmc} presents the \code{JAX} implementation of the kernel and MCMC inference framework, Section~\ref{sec:results} validates the analytic kernel against numerical results, Section~\ref{sec:discussion} discusses the physical interpretability of our results with intuitive visualizations, and the Appendix Section provides detailed derivations and \code{sympy} validation notebooks. A companion paper (J. Birky et al. 2026, in preparation; hereafter Paper~II) extends the kernel with additive composite terms for several coexisting spot populations and for non-spot variability, and applies the full framework to the four-year \kepler lightcurve of Kepler-63.
 
 \vspace{\baselineskip}
 % \clearpage
@@ -501,7 +499,7 @@ Figure~\ref{fig:overview} provides an overview of the derivation strategy. The a
 % -----------------------------------------------
 \subsection{Fourier Transform: The Rotation Term $\mathcal{V}(t)$} \label{subsec:ft_cosine}
 
-As given in Equation~\ref{eq:cos_beta}, the drop in flux due to a spot rotating into and out of view is determined by the angle $\beta$ between the spot normal and the line of sight.\footnote{Symbolic and numerical check: \NotebookLink{ft_spot_rotation.ipynb}} The spot is visible when $\cos\beta > 0$, and the visibility function is $\mathcal{V}(t) = \max\{\cos\beta(t),\,0\}$. The angle $\beta$ depends on the spot latitude $\Phi$, the stellar inclination $I$, and the rotation period $P$ of the star. 
+As given in Equation~\ref{eq:cos_beta}, the drop in flux due to a spot rotating into and out of view is determined by the angle $\beta$ between the spot normal and the line of sight.\footnote{Symbolic and numerical check: \NotebookLink{derive_ft_spot_rotation.ipynb}} The spot is visible when $\cos\beta > 0$, and the visibility function is $\mathcal{V}(t) = \max\{\cos\beta(t),\,0\}$. The angle $\beta$ depends on the spot latitude $\Phi$, the stellar inclination $I$, and the rotation period $P$ of the star. 
 
 Figure~\ref{fig:visibility} shows how the signal varies as a function of spot latitude $\Phi$ and stellar inclination $I$. For a star viewed equator-on ($I = 90^\circ$, left panel of Figure~\ref{fig:visibility}), the visibility function looks like a half-truncated cosine wave, where the spot rotates into view for half a rotation period and then rotates out of view for the other half. The different colors show the relative change in flux for spots at different latitudes $\Phi$, with spots at higher latitudes having smaller amplitudes due to their smaller projected areas.
 
@@ -567,7 +565,7 @@ As we will show in Section~\ref{subsec:kernel_combined_single_spot}, the kernel 
 % ------------------------------------------------------------------------
 \subsection{Fourier Transform: Spot Evolution Envelope Term $\Gamma(t)$} \label{subsec:ft_envelope}
 
-In this section we show how to derive the Fourier transform of the spot evolution envelope, which captures the growth and decay of the spot over time.\footnote{Symbolic and numerical checks: \NotebookLink{ft_squared_trapezoid.ipynb} for the squared trapezoid $\Gamma(t)$, and \NotebookLink{ft_trapezoid.ipynb} for the trapezoid $\alpha(t)$ itself.} Here we present several common spot evolution profiles, but the same approach can be applied to any arbitrary profile $\alpha(t)$ by performing the appropriate integral. These profiles include: (1) squared trapezoidal \citep{kipping_analytic_2012}, (2) exponential \citep{aigrain_testing_2015}, and (3) skewed normal \citep{forgacs-dajka_time-dependent_2021}. The trapezoidal and exponential profiles are simple functions which produce an analytic kernel function. On the other hand, the skewed normal profile is a more flexible profile that can capture asymmetric growth and decay timescales and reproduce the observed spot lifetimes of the Sun \citep{forgacs-dajka_time-dependent_2021}. 
+In this section we show how to derive the Fourier transform of the spot evolution envelope, which captures the growth and decay of the spot over time.\footnote{Symbolic and numerical checks: \NotebookLink{derive_ft_squared_trapezoid.ipynb} for the squared trapezoid $\Gamma(t)$, and \NotebookLink{derive_ft_trapezoid.ipynb} for the trapezoid $\alpha(t)$ itself.} Here we present several common spot evolution profiles, but the same approach can be applied to any arbitrary profile $\alpha(t)$ by performing the appropriate integral. These profiles include: (1) squared trapezoidal \citep{kipping_analytic_2012}, (2) exponential \citep{aigrain_testing_2015}, and (3) skewed normal \citep{forgacs-dajka_time-dependent_2021}. The trapezoidal and exponential profiles are simple functions which produce an analytic kernel function. On the other hand, the skewed normal profile is a more flexible profile that can capture asymmetric growth and decay timescales and reproduce the observed spot lifetimes of the Sun \citep{forgacs-dajka_time-dependent_2021}. 
 
 In the Results and Discussion (Sections~\ref{sec:results}--\ref{sec:discussion}) we show a detailed analysis of how the properties of the trapezoidal profile translate to the structure of the kernel function, as its analytic solution is easily interpretable. While perhaps not the most realistic model, the trapezoidal parameterization provides an intuitive insight into how the kernel behaves in different limits. We include the implementations for all three kernels in our \code{spotgp} implementation (as well as the flexibility to define custom envelope functions) so that users can experiment with different assumptions for spot lifetimes and decay timescales.
 
@@ -688,7 +686,7 @@ Figure~\ref{fig:fourier_decomposition} shows the Fourier decomposition of the si
 % -----------------------------------------------
 \subsection{Averaging Over Random Spot Parameters} \label{subsec:averaging}
 
-The expression for $\FT{A}(\omega)$ in Eq.~\eqref{eq:A_hat_sum} describes a \emph{single} spot with a particular reference time $t_{\rm ref}$, reference longitude $\Lambda_{\rm ref}$, and latitude $\Phi_{\rm ref}$. To obtain the kernel for a \emph{population} of spots, we must average the power spectral density $|\FT{A}(\omega)|^2$ over these random variables.\footnote{Symbolic and numerical check: \NotebookLink{averaging_random_params.ipynb}} We treat $t_{\rm ref}$ and $\Lambda_{\rm ref}$ as uniformly distributed, and $\Phi_{\rm ref}$ as drawn from some latitude distribution $p(\Phi)$.
+The expression for $\FT{A}(\omega)$ in Eq.~\eqref{eq:A_hat_sum} describes a \emph{single} spot with a particular reference time $t_{\rm ref}$, reference longitude $\Lambda_{\rm ref}$, and latitude $\Phi_{\rm ref}$. To obtain the kernel for a \emph{population} of spots, we must average the power spectral density $|\FT{A}(\omega)|^2$ over these random variables.\footnote{Symbolic and numerical check: \NotebookLink{derive_averaging_random_params.ipynb}} We treat $t_{\rm ref}$ and $\Lambda_{\rm ref}$ as uniformly distributed, and $\Phi_{\rm ref}$ as drawn from some latitude distribution $p(\Phi)$.
 
 \subsubsection{Effect of $t_{\rm ref}$: time shift of the envelope}
 
@@ -851,7 +849,7 @@ and the reduced hyperparameter set becomes:
 % -----------------------------------------------
 \subsubsection{Analytic solution for $\kappa=0$ and $I=90$} \label{subsec:kernel_anal_case}
 
-In some cases (e.g. a solid-body rotator viewed at 90 deg inclination), there is a closed-form analytic solution for the kernel.\footnote{Symbolic and numerical checks: \NotebookLink{closed_form_kernel_n2.ipynb} for $n \leq 2$ and general $I$, and \NotebookLink{closed_form_kernel.ipynb} for all harmonics.} Truncating to second harmonic order ($n \leq 2$) and specializing to solid-body rotation ($\kappa = 0$), the cosines factor out of the latitude integral and the kernel becomes:
+In some cases (e.g. a solid-body rotator viewed at 90 deg inclination), there is a closed-form analytic solution for the kernel.\footnote{Symbolic and numerical checks: \NotebookLink{derive_closed_form_kernel_n2.ipynb} for $n \leq 2$ and general $I$, and \NotebookLink{derive_closed_form_kernel.ipynb} for all harmonics.} Truncating to second harmonic order ($n \leq 2$) and specializing to solid-body rotation ($\kappa = 0$), the cosines factor out of the latitude integral and the kernel becomes:
 \begin{equation}
     \mathcal{K}(\tau) = \sigma_k^2\, R_\Gamma(\tau) \left[
         \langle |c_0|^2 \rangle_\Phi
@@ -1045,7 +1043,7 @@ The share of variance at $n = 2$ is small everywhere: $9\%$ of the total at best
 \end{equation}
 is a clean inclination diagnostic: $\mathcal{H} = (4/(3\pi))^2 \approx 0.18$ for edge-on viewing with uniform latitudes, falling by about $5\times$ the magnitude as $I = 30^\circ$. In the lightcurve, a significant $n = 2$ share manifests as the familiar ``double-dip'' shape: two flux minima per rotation.
 
-The same weights control how deeply the kernel oscillates.\footnote{Numerical check: \NotebookLink{lower_envelope.ipynb}} Writing the extrema of the cosine sum explicitly, the kernel is bounded by $k_{\rm upper}(\tau) = R_\Gamma(\tau)\,[\langle|c_0|^2\rangle + 2\langle|c_1|^2\rangle + 2\langle|c_2|^2\rangle]$ at integer periods and $k_{\rm lower}(\tau) = R_\Gamma(\tau)\,[\langle|c_0|^2\rangle - 2\langle|c_1|^2\rangle + 2\langle|c_2|^2\rangle]$ at half periods, so the fractional oscillation depth
+The same weights control how deeply the kernel oscillates.\footnote{Numerical check: \NotebookLink{lower_envelope_executed.ipynb}} Writing the extrema of the cosine sum explicitly, the kernel is bounded by $k_{\rm upper}(\tau) = R_\Gamma(\tau)\,[\langle|c_0|^2\rangle + 2\langle|c_1|^2\rangle + 2\langle|c_2|^2\rangle]$ at integer periods and $k_{\rm lower}(\tau) = R_\Gamma(\tau)\,[\langle|c_0|^2\rangle - 2\langle|c_1|^2\rangle + 2\langle|c_2|^2\rangle]$ at half periods, so the fractional oscillation depth
 \begin{equation}
     \frac{k_{\rm lower}}{k_{\rm upper}} = \frac{\langle|c_0|^2\rangle - 2\langle|c_1|^2\rangle + 2\langle|c_2|^2\rangle}{\langle|c_0|^2\rangle + 2\langle|c_1|^2\rangle + 2\langle|c_2|^2\rangle}
     \label{eq:envelope_ratio}
@@ -1742,7 +1740,7 @@ Looking ahead, systematic application of this kernel to large photometric survey
 
 \section{Fourier Coefficients of the Visibility Function} \label{app:fourier_visibility}
 
-Here we derive the Fourier coefficients $c_n$ of the visibility function $\mathcal{V}(t) = \max\{\cos\beta(t),\,0\}$ from first principles.\footnote{Symbolic verification: \variable{output/derivations/derive_fourier_cosine.tex}}
+Here we derive the Fourier coefficients $c_n$ of the visibility function $\mathcal{V}(t) = \max\{\cos\beta(t),\,0\}$ from first principles.\footnote{Symbolic and numerical checks: \NotebookLink{derive_ft_spot_rotation.ipynb}}
 
 \subsection{Setup}
 
@@ -1820,7 +1818,7 @@ where we used $\sin\big((1-n)x\big) = -\sin\big((n-1)x\big)$ and $1/(1-n) = -1/(
 % ========================================================================
 \section{Fourier Transform of the Trapezoidal Envelope} \label{app:fourier_trapezoid}
 
-Here we derive the Fourier transform and autocorrelation function of the trapezoidal envelope from Section~\ref{sec:spot_profile}; the transform of the unsquared trapezoid $\alpha(t)$ is derived in \NotebookLink{ft_trapezoid.ipynb}. Symbolic verification of these equations using \code{sympy} can be found at: \variable{output/derivations/derive_fourier_gamma.tex}
+Here we derive the Fourier transform and autocorrelation function of the trapezoidal envelope from Section~\ref{sec:spot_profile}; the transform of the unsquared trapezoid $\alpha(t)$ is derived in \NotebookLink{derive_ft_trapezoid.ipynb}. These equations are derived and verified with \code{SymPy} in \NotebookLink{derive_ft_squared_trapezoid.ipynb}.
 
 % ----------------------------------------------------------------
 \subsection{Piecewise Definition of $\Gamma(t)$}
@@ -1909,7 +1907,7 @@ Therefore:
 \section{Autocorrelation of the Squared Envelope} \label{app:acf_trapezoid}
 % ========================================================================
 
-Next we derive the closed-form autocorrelation $R_\Gamma(\tau) = \int_{-\infty}^{\infty} \Gamma(s)\,\Gamma(s+\tau)\,ds$ of the normalized squared trapezoidal envelope $\Gamma(t) = \alpha^2(t)/\alpha_{\max}^2$ defined in Eq.~\eqref{eq:Gamma_piecewise}. The \code{sympy} symbolic verification can be found at: \variable{output/derivations/derive_R_Gamma.tex}
+Next we derive the closed-form autocorrelation $R_\Gamma(\tau) = \int_{-\infty}^{\infty} \Gamma(s)\,\Gamma(s+\tau)\,ds$ of the normalized squared trapezoidal envelope $\Gamma(t) = \alpha^2(t)/\alpha_{\max}^2$ defined in Eq.~\eqref{eq:Gamma_piecewise}. The \code{SymPy} derivation and its checks are in \NotebookLink{derive_R_Gamma.ipynb}.
 
 % ----------------------------------------------------------------
 \subsection{Setup}
@@ -1964,21 +1962,5 @@ where the third piece is the degree-5 polynomial:
 \end{figure*}
 
 Figure~\ref{fig:envelope_autocorrelation} illustrates these results. The left panel shows the Fourier transform $\FT{\Gamma}(\omega)$ decomposed into the plateau contribution $I_1$ and the parabolic ramp contribution $I_2$. The right panel shows $R_\Gamma(\tau)$ with the four piecewise intervals color-coded, overlaid on a numerical convolution for verification.
-
-
-% ========================================================================
-\section{Verified Equations} \label{app:equation_checks}
-% ========================================================================
-
-Table~\ref{tab:equation_checks} lists the equations marked with \EquationCheckIcon in the margin. Each is transcribed once into \code{SymPy}, in an equation registry (\texttt{src/derivations/equations.py}), and three checks run against that transcription in every build of this paper. The notebook that derives the equation must reproduce it symbolically. Its \LaTeX\ source in this manuscript must be the text the transcription was last reviewed against. Where the table names a \code{spotgp} function, that function must match the transcription in value and in gradient with respect to every continuous argument, at random parameter values and on both sides of every piecewise breakpoint, with the transcription evaluated in 50-digit arithmetic. The build fails if any check fails, so every equation marked in this version of the paper has passed.
-
-\begin{table*}[ht!]
-\centering
-\caption{Equations verified symbolically and, where a function is named, against \code{spotgp}. The errors are the largest differences between \code{spotgp} and the transcribed equation, relative to the largest value (gradient) over each sweep of the equation's variable.}
-\label{tab:equation_checks}
-\footnotesize
-\setlength{\tabcolsep}{5pt}
-\input{output/equation_checks.tex}
-\end{table*}
 
 \end{document}

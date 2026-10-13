@@ -46,17 +46,6 @@ dependencies:
     - src/tex/output/gp_solver_loglike_n1000.tex
     - src/tex/output/simulated_posterior_table.tex
     - src/tex/references.bib
-    # Run every derivation notebook in the build, including the ones the text doesn't link to
-    - src/tex/output/derivations/derive_fourier_cosine.tex
-    - src/tex/output/derivations/derive_fourier_gamma.tex
-    - src/tex/output/derivations/derive_fourier_trapezoid.tex
-    - src/tex/output/derivations/derive_kernel_exponential.tex
-    - src/tex/output/derivations/derive_kernel_sigmoid.tex
-    - src/tex/output/derivations/derive_R_Gamma.tex
-    - src/tex/output/derivations/derive_R_Gamma_asymmetric.tex
-    # Check the equation registry against ms.tex, the notebooks and spotgp in every build
-    - src/tex/output/equation_checks.tex
-    - src/tex/output/equation_icons.tex
   # Timed on a GPU by compute_benchmark_tinygp_vs_spotgp.py, outside the build
   src/scripts/plot_benchmark_tinygp_vs_spotgp.py:
     - src/data/benchmark_tinygp_vs_spotgp.npz
