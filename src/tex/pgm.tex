@@ -27,10 +27,8 @@
 \draw[thin, gray!60!black] (10.95, 0.55) -- (10.95, 0.72) -- (12.05, 0.72) -- (12.05, 0.55);
 
 % Fixed nodes (to the left of the kernel block)
-\node[circle, fill=black, minimum size=3pt, inner sep=0pt] (pPhi) at (2.0, -2.4) {};
-\node[font=\scriptsize, anchor=east] at (1.8, -2.4) {$p(\Phi)$};
-\node[circle, fill=black, minimum size=3pt, inner sep=0pt] (ulimb) at (2.0, -3.2) {};
-\node[font=\scriptsize, anchor=east] at (1.8, -3.2) {$u$};
+\node[circle, fill=black, minimum size=3pt, inner sep=0pt] (pPhi) at (2.0, -2.8) {};
+\node[font=\scriptsize, anchor=east] at (1.8, -2.8) {$p(\Phi)$};
 
 % === Row 2: Photometric kernel (y=-2.8) ===
 \node[det] (K) at (5.5, -2.8) {$\mathcal{K}_{\rm spot}(\tau)$};
@@ -38,7 +36,6 @@
 \foreach \p in {Peq, kap, inc, ell, tau, sig}
   \draw[arr] (\p) -- (K);
 \draw[arr] (pPhi) -- (K);
-\draw[arr] (ulimb) -- (K);
 
 % === Row 3: Observable (y=-5.5) ===
 \node[param] (sn)  at (3.0, -5.5) {\footnotesize $\sigma_n$};
@@ -71,13 +68,12 @@
 \node[font=\scriptsize, anchor=west, text=gray!70!black] at (6.5, -9.8)   {$p(\Phi)$: spot latitude distribution};
 
 \node[font=\scriptsize, anchor=west, text=gray!70!black] at (-0.5, -10.3) {$\ell_{\rm sp}$: spot active lifetime};
-\node[font=\scriptsize, anchor=west, text=gray!70!black] at (6.5, -10.3)  {$u$: limb darkening coefficient};
 
 \node[font=\scriptsize, anchor=west, text=gray!70!black] at (-0.5, -10.8) {$\tau_{\rm sp}$: spot decay timescale};
 
-\node[font=\scriptsize, anchor=west, text=gray!70!black] at (-0.5, -11.3) {$F_i$: photometric flux};
+\node[font=\scriptsize, anchor=west, text=gray!70!black] at (6.5, -10.3)  {$F_i$: photometric flux};
 
 \end{tikzpicture}
-\caption{Probabilistic graphical model for the photometric starspot GP. Free parameters (open circles) determine the photometric kernel $\mathcal{K}_{\rm spot}(\tau)$ (Equation~\ref{eq:kernel_full}), which governs the temporal covariance of the flux observations $F_i$ across $N_t$ epochs. The rotation parameters ($P_{\rm eq}$, $\kappa$, $I$) control the harmonic structure, the evolution parameters ($\ell_{\rm sp}$, $\tau_{\rm sp}$) control the temporal envelope $R_\Gamma(\tau)$, and the amplitude parameter $\sigma_k$ controls the overall variability level. The spot latitude distribution $p(\Phi)$ and limb darkening coefficient $u$ (filled dots) enter the kernel as fixed inputs from stellar models.}
+\caption{Probabilistic graphical model for the photometric starspot GP. Free parameters (open circles) determine the photometric kernel $\mathcal{K}_{\rm spot}(\tau)$ (Equation~\ref{eq:kernel_full}), which governs the temporal covariance of the flux observations $F_i$ across $N_t$ epochs. The rotation parameters ($P_{\rm eq}$, $\kappa$, $I$) control the harmonic structure, the evolution parameters ($\ell_{\rm sp}$, $\tau_{\rm sp}$) control the temporal envelope $R_\Gamma(\tau)$, and the amplitude parameter $\sigma_k$ controls the overall variability level. The spot latitude distribution $p(\Phi)$ (filled dot) enters the kernel as a fixed input from stellar models.}
 \label{fig:pgm}
 \end{figure*}

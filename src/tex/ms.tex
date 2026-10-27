@@ -230,7 +230,7 @@ In this paper we proceed to derive the GP kernel under the simplifying assumptio
 % ------------------------------------------------------------------
 \subsection{The Emergence and Decay Profile of Spots} \label{sec:spot_profile}
 
-In this work, we assume that the angular size of the spot, $\alpha(t)$, evolves over time as the spot emerges and decays. Here we test two different parameterizations of the spot evolution: a piecewise linear function and an exponential growth/decay function. In both cases, the spot reaches its maximum angular size $\alpha_{\mathrm{max}}$ at time $t_{\mathrm{ref}}$, which is the reference time for the spot. The spot emerges over a timescale $\tau_{\rm em}$ and decays over a timescale $\tau_{\rm dec}$.
+In this work, we assume that the angular size of the spot, $\alpha(t)$, evolves over time as the spot emerges and decays. Here we test three different parameterizations of the spot evolution: a piecewise linear function, an exponential growth/decay function, and a skew-normal function. In each case, the spot reaches its maximum angular size $\alpha_{\mathrm{max}}$ near time $t_{\mathrm{ref}}$, which is the reference time for the spot. In the first two, the spot emerges over a timescale $\tau_{\rm em}$ and decays over a timescale $\tau_{\rm dec}$; in the skew-normal profile, the asymmetry between emergence and decay is instead set by a single skewness parameter.
 
 \textbf{Trapezoidal emergence/decay profile:} Following \citet{kipping_analytic_2012}, we define a piecewise linear function with an emergence timescale $\tau_{\rm em}$, a plateau duration $\ell_{\rm spot}$, and a decay timescale $\tau_{\rm dec}$. The spot holds its maximum angular size $\alpha_{\mathrm{max}}$ over a plateau centered on $t_{\mathrm{ref}}$, which is the reference time for the spot. The Heaviside step function $\mathsf{H}(x)$ is used to ensure that the spot only contributes to the flux deficit during its emergence and decay phases. The spot angular radius is given by:
 
@@ -255,11 +255,19 @@ where $t_1$ and $t_2 = t_1 + \tau_{\rm plat}$ mark the start and end of the plat
 The three parameters are: $\tau_{\rm em}$ (emergence $e$-folding time), $\tau_{\rm plat}$ (plateau duration), and $\tau_{\rm dec}$ (decay $e$-folding time).
 Without loss of generality we center the envelope by setting $t_1 = 0$, $t_2 = \tau_{\rm plat}$.
 
+\textbf{Skew-normal emergence/decay profile:} \citet{forgacs-dajka_time-dependent_2021} modeled sunspot group area evolution using a skew-normal function (their Eq.~1), which captures the observed asymmetry between rapid emergence and slower decay with a single smooth profile. Since the projected spot area scales as $\alpha^2$ in the small-spot limit, we apply the skew-normal to the squared angular radius:
+\begin{equation}
+    \alpha_{\rm sn}(t) = \alpha_{\max} \sqrt{\frac{S(t - t_{\rm ref})}{S_{\max}}}, \qquad
+    S(t) = \exp\!\left(-\frac{t^2}{2\sigma_{\rm sn}^2}\right) \left[1 + \mathrm{erf}\!\left(\frac{n_{\rm sn}\,t}{\sigma_{\rm sn}\sqrt{2}}\right)\right],
+    \label{eq:alpha_skewnorm}
+\end{equation}
+where $S_{\max}$ is the peak value of $S(t)$, so that $\alpha_{\rm sn}(t)$ reaches $\alpha_{\max}$ at its maximum. The two parameters are $\sigma_{\rm sn}$ (the scale parameter in days, controlling the overall spot lifetime) and $n_{\rm sn}$ (the dimensionless skewness parameter). When $n_{\rm sn} = 0$ the profile reduces to a symmetric Gaussian; $n_{\rm sn} > 0$ gives rapid emergence and slow decay (typical of sunspots), while $n_{\rm sn} < 0$ gives the opposite asymmetry. Unlike the trapezoidal and exponential profiles, the skew-normal profile has no plateau, and its peak is offset from $t_{\rm ref}$ when $n_{\rm sn} \neq 0$.
+
 \begin{figure}[ht!]
 \begin{center}
     \script{plot_spot_decomposition_panel.py}
     \includegraphics[width=\linewidth]{figures/spot_decomposition_panel.pdf}
-    \caption{Decomposition of the single-spot projected area signal $A(t)$ into the normalized squared spot-size envelope $\Gamma(t) = \alpha^2(t)/\alpha_{\max}^2$ (top) and the visibility function $\mathcal{V}(t) = \max\{\cos\beta(t),\, 0\}$ (middle), with their product $A(t) \propto \Gamma(t) \cdot \mathcal{V}(t)$ (bottom). \textit{Left:} trapezoidal envelope (Eq.~\ref{eqn:trapezoid}). \textit{Right:} exponential envelope (Eq.~\ref{eq:alpha_exp}). Both use the same rotation period $P = 3$\,d, spot latitude $\Phi = 30^\circ$, and edge-on inclination $I = 90^\circ$.}
+    \caption{Decomposition of the single-spot projected area signal $A(t)$ into the normalized squared spot-size envelope $\Gamma(t) = \alpha^2(t)/\alpha_{\max}^2$ (top) and the visibility function $\mathcal{V}(t) = \max\{\cos\beta(t),\, 0\}$ (middle), with their product $A(t) \propto \Gamma(t) \cdot \mathcal{V}(t)$ (bottom). \textit{Left:} trapezoidal envelope (Eq.~\ref{eqn:trapezoid}). \textit{Middle:} exponential envelope (Eq.~\ref{eq:alpha_exp}). \textit{Right:} skew-normal envelope (Eq.~\ref{eq:alpha_skewnorm}) with $n_{\rm sn} > 0$ (rapid emergence, slow decay). All three use the same rotation period $P = 3$\,d, spot latitude $\Phi = 30^\circ$, and edge-on inclination $I = 90^\circ$.}
     \label{fig:spot_decomposition}
 \end{center}
 \end{figure}
@@ -398,7 +406,7 @@ This distribution allows us to make predictions at new test points, where the  p
     \sigma^2 &= k(x_*,x_*) - k(x_*,\mathbf{x}) k(\mathbf{x},\mathbf{x})^{-1} k(\mathbf{x},x_*)
 \end{align}
 
-For this particular application, the mean function $m(t)$ is determined by the expected flux deficit from the average spot coverage. In practice, we subtract the mean from the observed data and set $m(t) = 0$. The covariance function $k(\mathbf{x}, \mathbf{x}')$ is derived in Section~\ref{sec:kernel_derivation}, and encodes the physical properties of the star and its spots. By maximizing the log marginal likelihood with respect to the hyperparameters $\theta$ of the kernel, we can infer the underlying physical parameters of the star and its spots from the observed lightcurve data. For simplification we assume that the distribution of starspot properties does not evolve with time. In other words, the kernel is \emph{stationary} and depends only the time lag $\tau$ between two points.
+For this particular application, the mean function $m(t)$ is determined by the expected flux deficit from the average spot coverage, which we derive analytically in Section~\ref{sec:mean_function}. In practice, we subtract the mean from the observed data and set $m(t) = 0$. The covariance function $k(\mathbf{x}, \mathbf{x}')$ is derived in Section~\ref{sec:kernel_derivation}, and encodes the physical properties of the star and its spots. By maximizing the log marginal likelihood with respect to the hyperparameters $\theta$ of the kernel, we can infer the underlying physical parameters of the star and its spots from the observed lightcurve data. For simplification we assume that the distribution of starspot properties does not evolve with time. In other words, the kernel is \emph{stationary} and depends only the time lag $\tau$ between two points.
 With these basic assumptions, we move on to how to compute the kernel function numerical and analytically. However, for a more comprehensive introduction to Gaussian processes and their properties, see \citet{rasmussen_gaussian_2006}. 
 
 % ------------------------------------------------------------------------
@@ -428,10 +436,9 @@ The covariance matrix can then be estimated over a large sample of simulations w
     \label{eq:numerical_kernel}
 \end{align}
 In practice, the numerical approach is computationally expensive, since it requires generating a large number of lightcurves and computing the covariance for each pair of time points. Moreover, it does not provide a closed-form expression for the kernel function, which limits its interpretability and makes it difficult to use in a Gaussian process regression framework.
-In the following sections, we derive an analytical expression for the kernel $\mathcal{K}(\tau)$ (Section~\ref{sec:kernel_derivation}) and use the numerical estimate for validation.
 
-% \vspace{\baselineskip}
-\clearpage
+\vspace{\baselineskip}
+% \clearpage
 % ========================================================================================
 \section{Deriving the Analytical Kernel for Starspot Variability} \label{sec:kernel_derivation}
 
@@ -619,7 +626,7 @@ The full derivation, including the direct convolution for $R_\Gamma(\tau)$, is a
     \Gamma(t) \;\propto\; \exp\!\left(-\frac{t^2}{2\sigma_{\rm sn}^2}\right) \left[1 + \mathrm{erf}\!\left(\frac{n_{\rm sn}\,t}{\sigma_{\rm sn}\sqrt{2}}\right)\right],
     \label{eq:Gamma_skewnorm}
 \end{equation}
-rescaled so that the peak value equals unity. The two free parameters are $\sigma_{\rm sn}$ (the scale parameter in days, controlling the overall spot lifetime) and $n_{\rm sn}$ (the dimensionless skewness parameter). When $n_{\rm sn} = 0$ the envelope reduces to a symmetric Gaussian; $n_{\rm sn} < 0$ gives rapid rise and slow decay (typical of solar spots), while $n_{\rm sn} > 0$ gives the opposite asymmetry.
+rescaled so that the peak value equals unity. The two free parameters are $\sigma_{\rm sn}$ (the scale parameter in days, controlling the overall spot lifetime) and $n_{\rm sn}$ (the dimensionless skewness parameter). When $n_{\rm sn} = 0$ the envelope reduces to a symmetric Gaussian; $n_{\rm sn} > 0$ gives rapid rise and slow decay (typical of solar spots), while $n_{\rm sn} < 0$ gives the opposite asymmetry.
 Unlike the trapezoidal and exponential profiles, the skew-normal $\Gamma(t)$ does not yield a closed-form autocorrelation $R_\Gamma(\tau)$ or Fourier transform $\widehat{\Gamma}(\omega)$, so we therefore compute both numerically via FFT-based methods in our \code{spotgp} implementation. This function is shown in the right panel of Figure~\ref{fig:envelope_kernel_comparison}.
 
 \begin{figure}[ht!]
@@ -834,7 +841,7 @@ The full hyperparameters of this kernel are:
     \theta = \{ P_{\rm eq},\; \kappa,\; I,\; \dot{N}_{\rm spot},\; \ell_{\rm spot},\; \tau_{\rm spot},\; \alpha_{\rm max},\; f_{\rm spot} \}.
 \end{equation}
 
-The amplitude in Eq.~\eqref{eq:kernel_full} is set by the spot emergence rate $\dot{N}_{\rm spot}$ [spots/day], not by the total number of spots. For a time series of duration $T_{\rm obs}$ the expected number of spots is $N_{\rm spot} = \dot{N}_{\rm spot}\,T_{\rm obs}$, but a longer baseline adds spots without changing the variance of the flux. The amplitude prefactor $\dot{N}_{\rm spot}\,(1 - f_{\rm spot})^2\,\alpha_{\max}^4$ is therefore independent of the observing baseline, an intrinsic stellar property. In our \code{spotgp} implementation the amplitude is specified through \texttt{nspot\_rate} (emergence rate in spots/day), which is the recommended parameterization for inference.
+The amplitude in Eq.~\eqref{eq:kernel_full} is set by the spot emergence rate $\dot{N}_{\rm spot}$ [spots/day], not by the total number of spots. For a time series of duration $T_{\rm obs}$ the expected number of spots is $N_{\rm spot} = \dot{N}_{\rm spot}\,T_{\rm obs}$, but a longer baseline adds spots without changing the variance of the flux. The amplitude prefactor $\dot{N}_{\rm spot}\,(1 - f_{\rm spot})^2\,\alpha_{\max}^4$ is therefore independent of the observing baseline, an intrinsic stellar property. It sets only the spot part of the zero-lag variance $\mathcal{K}(0)$ (granulation, stellar oscillations and instrumental noise add variance of their own, and when they are not modeled the fitted spot amplitude absorbs part of it and is biased high; Section~\ref{sec:limitations}). In our \code{spotgp} implementation the amplitude is specified through \texttt{nspot\_rate} (emergence rate in spots/day), which is the recommended parameterization for inference.
 
 The amplitude prefactor is degenerate in practice (only the product can be constrained from the lightcurve variance) so it can be absorbed into a single amplitude hyperparameter $\sigma_k^2$. Defining the spot contrast-area product as $a_{\rm spot} = (1 - f_{\rm spot})\,\alpha_{\max}^2$, then:
 \begin{equation}
@@ -914,20 +921,55 @@ Differential rotation causes the harmonic peaks to broaden: spots at different l
 
 \vspace{\baselineskip}
 % ========================================================================================
+\section{Deriving the Mean Function} \label{sec:mean_function}
+
+A Gaussian process is fully specified by its mean function $m(t) = \E[F(t)]$ and covariance function $\mathcal{K}(\tau)$. Having derived the kernel in Section~\ref{sec:kernel_derivation}, we now compute the mean function analytically from the flux model.
+
+As in Section~\ref{subsec:multi_spot}, we model spot emergence as a stationary process with rate $\dot{N}_{\rm spot}$ [spots\,day$^{-1}$], so that each spot contributes a finite-duration flux pulse. For identical spots with contrast $f_{\rm spot}$, the expected flux deficit at any instant is the emergence rate times the time-integrated flux deficit of a single spot:
+\begin{equation}
+    \E[\delta F] = \frac{\dot{N}_{\rm spot}\,(1 - f_{\rm spot})}{\pi}\;\int_{-\infty}^{\infty}\! \E_{\Lambda,\,\Phi}[A(t)]\,dt.
+    \label{eq:mean_deficit}
+\end{equation}
+The integral converges because each spot has finite support through $\Gamma(t)$, and $t_{\rm ref}$ does not appear: a shift in spot emergence time is equivalent to a phase rotation of the longitude, which is already uniformly distributed.
+
+Using the small-spot factorization (Eq.~\ref{eq:A_smallspot}), $A(t) = \pi\,\alpha_{\max}^2\,\Gamma(t)\,\mathcal{V}(t;\,\Lambda_{\rm ref},\,\Phi)$, we average over $\Lambda_{\rm ref}$ inside the time integral. Since $\Lambda_{\rm ref}$ is uniform on $[0,2\pi]$, the longitude-averaged visibility is constant in time:
+\begin{equation}
+    \bar{\mathcal{V}}(\Phi, I) \equiv \langle \mathcal{V}(t) \rangle_\Lambda = \frac{1}{2\pi}\int_0^{2\pi} \max\!\big\{b_0 + b_1\cos(\omega_0 t + \Lambda_{\rm ref}),\;0\big\}\,d\Lambda_{\rm ref}
+    = \frac{b_0\,\theta_{\rm vis} + b_1\sin\theta_{\rm vis}}{\pi},
+    \label{eq:mean_visibility}
+\end{equation}
+where $b_0 = \cos I\sin\Phi$, $b_1 = \sin I\cos\Phi$, and $\theta_{\rm vis} = \arccos(-b_0/b_1)$. This is exact: averaging over the initial longitude phase is equivalent to averaging over one full rotation period, so $\bar{\mathcal{V}}$ is independent of $t$ regardless of the spot lifetime. This is exactly the zeroth Fourier coefficient $c_0(\Phi)$ of the visibility function derived in Section~\ref{subsec:ft_cosine}.
+
+Since $\bar{\mathcal{V}}$ is constant, it factors out of the time integral, and the remaining integral acts only on the spot-size envelope:
+\begin{equation}
+    \int_{-\infty}^{\infty}\! \langle A(t) \rangle_\Lambda\,dt
+    = \pi\,\alpha_{\max}^2\;\bar{\mathcal{V}}(\Phi,I)\int_{-\infty}^{\infty}\!\Gamma(t)\,dt.
+\end{equation}
+Averaging over the latitude distribution $p(\Phi)$ and combining, the expected flux for a general envelope $\Gamma(t)$ is:
+\begin{equation}
+    \boxed{
+    \E[F] = 1 - \dot{N}_{\rm spot}\,(1 - f_{\rm spot})\,\alpha_{\max}^2\left(\int_{-\infty}^{\infty}\!\Gamma(t)\,dt\right)\int_{-\pi/2}^{\pi/2}\bar{\mathcal{V}}(\Phi, I)\,p(\Phi)\,d\Phi
+    }
+    \label{eq:mean_flux}
+\end{equation}
+This is an intrinsic stellar property, independent of both the observing baseline $T_{\rm obs}$ and the rotation parameters $P_{\rm eq}$ and $\kappa$, since the time-averaged visibility $\bar{\mathcal{V}}$ depends only on the inclination and latitude geometry. The only envelope-dependent quantity is $\int\Gamma(t)\,dt$, which has a closed-form expression for each profile considered in this work. Note the contrast with the kernel amplitude (Section~\ref{subsec:kernel_combined_single_spot}), which involves $R_\Gamma(0) = \int\Gamma^2(t)\,dt$: the mean depends on the first moment of the envelope, while the variance depends on the second. In practice, we set the GP mean function to $m(t) = 0$ and model the mean-subtracted residuals, however we include this derivation for completeness and to show how the mean depends on the physical parameters of the starspot model.
+
+\vspace{\baselineskip}
+% ========================================================================================
 \section{Physical Interpretation of Kernel Hyperparameters} \label{sec:hyperparameters}
 
-% \subsection{Information Content of the Mean and Covariance} \label{sec:mean_function}
-% Before discussing the individual hyperparameters, we illustrate how the single-spot signal connects to the two statistical quantities modeled by the GP: the mean function (first moment) and the kernel (second moment). Figure~\ref{fig:moment_decomposition} shows 80 realizations of the single-spot signal $A(t) = \Gamma(t)\,\mathcal{V}(t)$ for random initial longitudes $\Lambda_{\rm ref}$, at fixed inclination $I = 60^\circ$ and latitude $\Phi = 30^\circ$. The ensemble mean over all longitudes is the smooth, aperiodic curve $\langle A(t) \rangle_\Lambda = c_0\,\Gamma(t)$: the spot-size envelope scaled by the zeroth Fourier coefficient of the visibility function. This is the first moment of the process: the quantity that enters the GP mean function (Section~\ref{sec:mean_function}). It depends linearly on $c_0$ and on the first moment of the envelope, $\int \Gamma\,dt$.
+\subsection{Information Content of the Mean and Covariance} \label{sec:mean_function}
+Before discussing the individual hyperparameters, we illustrate how the single-spot signal connects to the two statistical quantities modeled by the GP: the mean function (first moment) and the kernel (second moment). Figure~\ref{fig:moment_decomposition} shows 80 realizations of the single-spot signal $A(t) = \Gamma(t)\,\mathcal{V}(t)$ for random initial longitudes $\Lambda_{\rm ref}$, at fixed inclination $I = 60^\circ$ and latitude $\Phi = 30^\circ$. The ensemble mean over all longitudes is the smooth, aperiodic curve $\langle A(t) \rangle_\Lambda = c_0\,\Gamma(t)$: the spot-size envelope scaled by the zeroth Fourier coefficient of the visibility function. This is the first moment of the process: the quantity that enters the GP mean function (Section~\ref{sec:mean_function}). It depends linearly on $c_0$ and on the first moment of the envelope, $\int \Gamma\,dt$.
 
-% The lower panel shows the residuals after subtracting this mean. These oscillatory residuals (produced by the periodic rotation of the spot in and out of view) are what the kernel (second moment) describes. Their variance depends quadratically on the Fourier coefficients ($|c_n|^2$) and on the autocorrelation of the envelope, $R_\Gamma(\tau) = \int \Gamma(t)\,\Gamma(t+\tau)\,dt$. The distinction between these two moments (linear versus quadratic dependence on the visibility coefficients, and first versus second functional of the envelope) is what allows the mean and kernel to constrain different combinations of the amplitude parameters.
+The lower panel shows the residuals after subtracting this mean. These oscillatory residuals (produced by the periodic rotation of the spot in and out of view) are what the kernel (second moment) describes. Their variance depends quadratically on the Fourier coefficients ($|c_n|^2$) and on the autocorrelation of the envelope, $R_\Gamma(\tau) = \int \Gamma(t)\,\Gamma(t+\tau)\,dt$. The distinction between these two moments (linear versus quadratic dependence on the visibility coefficients, and first versus second functional of the envelope) is what allows the mean and kernel to constrain different combinations of the amplitude parameters.
 
-% \begin{figure}[ht!]
-%     \centering
-%     \script{plot_moment_decomposition.py}
-%     \includegraphics[width=\linewidth]{figures/fig_moment_decomposition.pdf}
-%     \caption{Decomposition of the single-spot signal into first and second moments of the GP, for a spot at latitude $\Phi = 30^\circ$ with $I = 60^\circ$, $P_{\rm eq} = 5$\,d, $\ell_{\rm spot} = 15$\,d, and $\tau_{\rm spot} = 3$\,d. \textit{Top:} 80 realizations of $A(t) = \Gamma(t)\,\mathcal{V}(t)$ for random longitudes (blue), with the ensemble mean $\langle A \rangle_\Lambda = c_0\,\Gamma(t)$ (red). The mean depends linearly on $c_0$ and on $\int\Gamma\,dt$ (first moment of the envelope). \textit{Bottom:} Residuals after subtracting the mean, with $\pm\sigma(t)$ envelope (orange). This spread is what the kernel describes; it depends quadratically on $|c_n|^2$ and on the envelope autocorrelation $R_\Gamma(\tau) = \int\Gamma(t)\,\Gamma(t+\tau)\,dt$ (second moment of the envelope).}
-%     \label{fig:moment_decomposition}
-% \end{figure}
+\begin{figure}[ht!]
+    \centering
+    \script{plot_moment_decomposition.py}
+    \includegraphics[width=\linewidth]{figures/fig_moment_decomposition.pdf}
+    \caption{Decomposition of the single-spot signal into first and second moments of the GP, for a spot at latitude $\Phi = 30^\circ$ with $I = 60^\circ$, $P_{\rm eq} = 5$\,d, $\ell_{\rm spot} = 15$\,d, and $\tau_{\rm spot} = 3$\,d. \textit{Top:} 80 realizations of $A(t) = \Gamma(t)\,\mathcal{V}(t)$ for random longitudes (blue), with the ensemble mean $\langle A \rangle_\Lambda = c_0\,\Gamma(t)$ (red). The mean depends linearly on $c_0$ and on $\int\Gamma\,dt$ (first moment of the envelope). \textit{Bottom:} Residuals after subtracting the mean, with $\pm\sigma(t)$ envelope (orange). This spread is what the kernel describes; it depends quadratically on $|c_n|^2$ and on the envelope autocorrelation $R_\Gamma(\tau) = \int\Gamma(t)\,\Gamma(t+\tau)\,dt$ (second moment of the envelope).}
+    \label{fig:moment_decomposition}
+\end{figure}
 
 \subsection{Kernel Components and Hyperparameters} \label{subsec:kernel_components}
 
@@ -940,13 +982,13 @@ The full kernel (Eq.~\ref{eq:kernel_full}) is a sum over rotation harmonics, and
 \end{equation}
 with $s_0 = 1$ and $s_n = 2$ for $n \geq 1$, each harmonic term is the product of exactly three factors, and every physical hyperparameter enters through exactly one of them:
 \begin{itemize}[nosep]
-    \item \textbf{The envelope autocorrelation $R_\Gamma(\tau)$} encodes how long spots live. It carries $\ell_{\rm spot}$ and $\tau_{\rm spot}$, and it multiplies every order identically.
-    \item \textbf{The geometry weight $|c_n(I,\Phi)|^2$} sets how much variance lands in order $n$. It carries the inclination $I$ and the latitude distribution $p(\Phi)$, and nothing else.
-    \item \textbf{The rotation phase $\cos(n\,\omega_0(\Phi)\tau)$} carries $P_{\rm eq}$ and $\kappa$ and sets the positions of the kernel peaks.
+    \item \textbf{The envelope autocorrelation}: $R_\Gamma(\tau)$ encodes how long spots live. It carries $\ell_{\rm spot}$ and $\tau_{\rm spot}$, and it multiplies every order identically.
+    \item \textbf{The geometry weight}: $|c_n(I,\Phi)|^2$ sets how much variance lands in order $n$. It carries the inclination $I$ and the latitude distribution $p(\Phi)$, and nothing else.
+    \item \textbf{The rotation phase}: $\cos(n\,\omega_0(\Phi)\tau)$ carries $P_{\rm eq}$ and $\kappa$ and sets the positions of the kernel peaks.
 \end{itemize}
 The amplitude $\sigma_k^2$ multiplies all orders equally. Because the three harmonics are sensitive to disjoint pieces of the physics, they are not three views of the same measurement: which parameters a fit can recover is decided by which orders the data constrain. The subsections below examine each order in turn; all quoted numbers are computed with \code{spotgp} (\code{AnalyticKernel.kernel\_components}, Gauss--Legendre latitude quadrature) for a fiducial model with $\ell_{\rm spot} = 15$\,d, $\tau_{\rm spot} = 3$\,d, $I = 60^\circ$, $P_{\rm eq} = 5$\,d, uniform $p(\Phi)$, varying one parameter at a time.\footnote{The accompanying notebook is \texttt{src/notebooks/harmonics\_plots.ipynb}.}
 
-Each $\mathcal{K}_n$ is separately a valid (positive semi-definite) kernel: the $n = 0$ term has spectrum $|\FT{\Gamma}(\omega)|^2 \langle|c_0|^2\rangle_\Phi \geq 0$, the $n \geq 1$ terms have spectra $[S_\Gamma(\omega - n\omega_0) + S_\Gamma(\omega + n\omega_0)]$ that are shifted copies of the same non-negative function, and a positive mixture over latitude preserves both statements. The harmonics are therefore \emph{independently samplable} stochastic processes whose sum is a draw from the full GP. Figure~\ref{fig:harmonic_timeseries} shows this decomposition in the time domain: the $n = 0$ component is an aperiodic random walk--like dimming set by spot emergence and decay, the $n = 1$ component is the familiar rotational modulation, and the $n = 2$ component is a weaker signal at half the rotation period; their sum is statistically identical to a draw from the full kernel. Figure~\ref{fig:harmonic_decomposition_single} shows the same decomposition of the kernel and its PSD: at the fiducial inclination the $n = 0$, 1, 2 terms contribute $60\%$, $36\%$, and $4\%$ of the variance.
+Each $\mathcal{K}_n$ is separately a valid (positive semi-definite) kernel: the $n = 0$ term has spectrum $|\FT{\Gamma}(\omega)|^2 \langle|c_0|^2\rangle_\Phi \geq 0$, the $n \geq 1$ terms have spectra $[S_\Gamma(\omega - n\omega_0) + S_\Gamma(\omega + n\omega_0)]$ that are shifted copies of the same non-negative function, and a positive mixture over latitude preserves both statements. The harmonics are therefore \emph{independently samplable} stochastic processes whose sum is a draw from the full GP. Figure~\ref{fig:harmonic_timeseries} shows this decomposition in the time domain: the $n = 0$ component is an aperiodic random walk--like dimming set by spot emergence and decay, the $n = 1$ component is the familiar rotational modulation, and the $n = 2$ component is a weaker signal at half the rotation period; their sum is statistically identical to a draw from the full kernel. Figure~\ref{fig:harmonic_decomposition_single} shows the same decomposition of the kernel and its PSD: at the fiducial inclination the $n = 0$, 1, 2 terms contribute $59\%$, $37\%$, and $4\%$ of the variance.
 
 \begin{figure}[p]
     \centering
@@ -972,7 +1014,7 @@ With no cosine factor, the $n = 0$ term is the envelope autocorrelation times a 
 $\mathcal{K}_0(\tau) = \sigma_k^2\,\langle|c_0|^2\rangle_\Phi\, R_\Gamma(\tau)$.
 Its shape is a direct readout of how long spots live, uncontaminated by anything else: for the trapezoidal envelope it decays through the piecewise-polynomial breakpoints at $\tau = \tau_{\rm spot}$, $\ell_{\rm spot}$, $\ell_{\rm spot} + \tau_{\rm spot}$ and reaches zero \emph{exactly} at $\tau = \ell_{\rm spot} + 2\tau_{\rm spot}$ (21\,d for the fiducial model; Appendix~\ref{app:acf_trapezoid}). The plateau carries most of the leverage: doubling $\ell_{\rm spot}$ from 15 to 30\,d moves the half-height lag from 8.9 to 16.4\,d, while $\tau_{\rm spot}$ enters at roughly half that weight.
 
-Because $P_{\rm eq}$ and $\kappa$ enter only through the cosine factor, the $n = 0$ term is \emph{completely blind} to both: the normalized $\mathcal{K}_0$ is identical for any rotation period or shear. This invariance is what makes it useful: rotation cannot leak into it, so it is the fixed reference against which the decay of the $n \geq 1$ orders is measured (Section~\ref{subsec:harmonic_kappa}). Its amplitude, by contrast, is pure geometry: $\langle|c_0|^2\rangle_\Phi$ grows by a factor ${\sim}5$ from edge-on to $I = 10^\circ$ as more of the spot population becomes permanently visible.
+Because $P_{\rm eq}$ and $\kappa$ enter only through the cosine factor, the $n = 0$ term is completely blind to both: the normalized $\mathcal{K}_0$ is identical for any rotation period or shear. This invariance is what makes it useful: rotation cannot leak into it, so it is the fixed reference against which the decay of the $n \geq 1$ orders is measured (Section~\ref{subsec:harmonic_kappa}). Its amplitude, by contrast, is pure geometry: $\langle|c_0|^2\rangle_\Phi$ grows by a factor ${\sim}5$ from edge-on to $I = 10^\circ$ as more of the spot population becomes permanently visible.
 
 The compact support of $\mathcal{K}_0$ also provides a clean model-checking diagnostic. Unlike the exponential or Gaussian decays of phenomenological kernels, which are strictly positive at all lags, the starspot kernel vanishes identically beyond $\ell_{\rm spot} + 2\tau_{\rm spot}$; any observed correlation at longer lags must come from other sources (activity cycles, instrument systematics), or indicates a longer spot lifetime. Combined with the rotational recurrences of the $n \geq 1$ terms, this sets the number of visible ACF peaks,
 \begin{equation}
@@ -981,7 +1023,7 @@ The compact support of $\mathcal{K}_0$ also provides a clean model-checking diag
 \end{equation}
 the starspot analog of the quality factor of a damped oscillator kernel (in practice the last peak sits on the tail of $R_\Gamma$ and is barely visible).
 
-Finally, the $n = 0$ harmonic is the point of contact between the kernel and the mean function: $c_0 = \bar{\mathcal{V}}$ enters the mean linearly (Section~\ref{sec:mean_function}) and the kernel quadratically. The $|c_0|^2$ floor keeps the kernel non-negative at all lags: each spot only ever dims the star, and the autocorrelation of a one-signed pulse is non-negative, whereas sample ACFs of real lightcurves dip negative at half-period lags. The difference is an estimator effect: subtracting the finite-window time mean biases the sample ACF downward by roughly $\bar{\mathcal{K}} = T^{-1}\!\int\mathcal{K}\,ds$, which is dominated by the $n = 0$ power. The DC power fraction $f_0 = \mathcal{K}_0(0)/\mathcal{K}(0)$ quantifies how large this effect can be, growing from $0.41$ at $I = 90^\circ$ toward unity pole-on. Since the $n = 0$ fluctuations are genuinely stochastic (the number of visible spots varies), the term belongs in the kernel even for mean-subtracted data; the finite-window bias is better handled by fitting or marginalizing an explicit flux offset (Section~\ref{sec:offsets}) than by removing the term.
+Finally, the $n = 0$ harmonic is the point of contact between the kernel and the mean function: $c_0 = \bar{\mathcal{V}}$ enters the mean linearly (Section~\ref{sec:mean_function}) and the kernel quadratically. The $|c_0|^2$ floor keeps the kernel non-negative at all lags: each spot only ever dims the star, and the autocorrelation of a one-signed pulse is non-negative, whereas sample ACFs of real lightcurves dip negative at half-period lags. The difference is an estimator effect: subtracting the finite-window time mean biases the sample ACF downward by roughly $\bar{\mathcal{K}} = T^{-1}\!\int\mathcal{K}\,ds$, which is dominated by the $n = 0$ power. The DC power fraction $f_0 = \mathcal{K}_0(0)/\mathcal{K}(0)$ quantifies how large this effect can be, growing from $0.41$ at $I = 90^\circ$ toward unity pole-on. Since the $n = 0$ fluctuations are genuinely stochastic (the number of visible spots varies), the term belongs in the kernel even for mean-subtracted data.
 
 In practice, a second and typically larger effect compounds the estimator bias above. That bias is a statistical artifact of not knowing the true baseline flux level: it would persist even for a perfectly instrumented, unfiltered lightcurve, simply because the sample mean used in its place is itself contaminated by the same low-frequency power it is meant to remove. The second effect is different in kind: the lightcurve detrending applied upstream of the GP fit (e.g., a Savitzky--Golay filter with a window of tens of days) is a real spectral filter, applied by the reduction pipeline before the GP ever sees the data, that removes power at exactly the frequencies the DC bump occupies. The bump has half-width $\sim 1/(\ell_{\rm spot} + 2\tau_{\rm spot})$, comparable to or narrower than the typical detrending window, so the filter does not merely attenuate the $n = 0$ term uniformly; it can carve out most of it. Because $\ell_{\rm spot}$ and $\tau_{\rm spot}$ are shared with the $n \geq 1$ harmonics through $R_\Gamma(\tau)$, forcing the kernel to match its full geometric DC prediction against a lightcurve with that power removed pulls the fitted envelope timescale away from its true value to compensate; and because the ratio $\langle|c_0|^2\rangle_\Phi/\langle|c_1|^2\rangle_\Phi$ is a principal lever for constraining the inclination (Section~\ref{subsec:kernel_components}), that constraint degrades along with it.
 
@@ -1079,7 +1121,7 @@ Only equator-on does the na\"ive $n$-scaling survive (Table~\ref{tab:harmonic_de
 
 % \begin{figure}[ht!]
 %     \centering
-%     \script{plot_kernel_psd_harmonic_decomposition.py}ro
+%     \script{plot_kernel_psd_harmonic_decomposition.py}
 %     \includegraphics[width=0.95\linewidth]{figures/fig_kernel_psd_harmonic_decomposition.pdf}
 %     \caption{Harmonic decomposition of the kernel (left) and PSD (right) as each hyperparameter is varied about the fiducial model ($P_{\rm eq} = 5$\,d, $\kappa = 0.2$, $I = 60^\circ$, $\ell_{\rm spot} = 15$\,d, $\tau_{\rm spot} = 3$\,d, $\sigma_k = 0.05$; parameter values are encoded light $\to$ dark). $P_{\rm eq}$ and $\kappa$ move only the $n \geq 1$ terms and leave the $n = 0$ curve untouched; $I$ redistributes power between the orders without changing any shape; $\ell_{\rm spot}$ and $\tau_{\rm spot}$ stretch the common envelope of all orders; $\sigma_k$ rescales everything equally.}
 %     \label{fig:harmonic_parameter_tour}
@@ -1112,6 +1154,38 @@ Four consequences for inference follow directly:
     \item \textbf{$\kappa$ is never constrained alone.} Dephasing needs a lever arm in latitude: at $\kappa = 0.4$ an equatorial band barely damps the first recurrence at all (0.712 versus 0.741 for solid body), while a polar band moves it from 5.0 to 7.4\,d. What the data constrain is $\kappa$ times the occupied latitude spread: the same degeneracy noted for individual-spot modeling by \citet{basri_information_2020}.
     \item \textbf{Rotation is measurable only while the envelope survives it.} When $\ell_{\rm spot} + 2\tau_{\rm spot} \lesssim P_{\rm eq}$, the first recurrence lands beyond the envelope's support and $P_{\rm eq}$, $\kappa$, and $I$ all lose their handles at once, leaving only the weak half-period recurrence of $n = 2$. This is the regime, identified independently by the Cram\'er--Rao analysis of Section~\ref{sec:cranmer_rao}, in which the kernel degrades gracefully into a purely aperiodic model.
 \end{enumerate}
+
+% ------------------------------------------------------------------------
+\subsection{Assumed Distributions of Spot Parameters} \label{sec:assumed_distributions}
+
+Both the numerical and the analytic kernel are averages over the random parameters of the spot population, so the kernel we derive is specific to the distributions assumed for those parameters. Table~\ref{tab:assumed_distributions} lists the distribution we adopt in this paper for each parameter of Tables~\ref{tab:star_parameters} and \ref{tab:spot_parameters}. Only the reference time, longitude, and latitude of each spot are random. Spots emerge independently of one another, and these three variables are drawn independently for each spot. All other spot properties take the same value for every spot.
+
+\begin{table}[ht!]
+    \centering
+    \caption{Distributions assumed for the spot and stellar parameters in this paper.}
+    \label{tab:assumed_distributions}
+    \begin{tabular}{l >{\raggedright\arraybackslash}p{0.55\linewidth}}
+        \hline
+        Parameter & Assumed distribution \\
+        \hline
+        \multicolumn{2}{c}{\textit{Random for each spot}} \\
+        $t_{{\rm ref},k}$ & Poisson process with uniform random spot emergence rate \\
+        $\Lambda_{{\rm ref},k}$ & uniform on $[0, 2\pi)$ \\
+        $\Phi_{{\rm ref},k}$ & uniform in latitude, $p(\Phi) = 1/\pi$ on $[-\pi/2, \pi/2]$ \\
+        \hline
+        \multicolumn{2}{c}{\textit{Identical for every spot}} \\
+        $\ell_{\rm spot}$, $\tau_{\rm spot}$ & fixed, with $\tau_{\rm em} = \tau_{\rm dec} = \tau_{\rm spot}$ \\
+        $\alpha_{\max}$, $f_{\rm spot}$ & fixed \\
+        $P_{\rm eq}$, $\kappa$, $I$ & fixed (properties of the star) \\
+        \hline
+    \end{tabular}
+\end{table}
+
+Each of these parameters enters the derivation of Section~\ref{sec:kernel_derivation} at a different step. Averaging over the emergence times $t_{{\rm ref},k}$ removes the phase of each spot's spectrum, so the kernel depends on the spot envelope only through its autocorrelation $R_\Gamma(\tau)$, whose shape is set by $\ell_{\rm spot}$ and $\tau_{\rm spot}$ (Section~\ref{subsec:averaging}). Averaging over the longitudes $\Lambda_{{\rm ref},k}$ cancels the cross terms between different harmonics of the visibility function (Eq.~\ref{eq:longitude_orthogonality}). The latitude distribution $p(\Phi)$ is the weight in the remaining integral over latitude (Eq.~\ref{eq:kernel_full}), and the stellar parameters set the integrand: $P_{\rm eq}$ and $\kappa$ give the rotation frequency $\omega_0(\Phi)$ of a spot at each latitude, and $I$ together with $\Phi$ gives the Fourier coefficients $c_n(I, \Phi)$ of its visibility function. The spot size $\alpha_{\max}$ and contrast $f_{\rm spot}$ only scale the kernel amplitude $\sigma_k$ (Eq.~\ref{eq:sigma_k_cspot}).
+
+Of these, the emergence-time and longitude distributions are built into the form of the kernel. A constant emergence rate makes the kernel stationary, and the cross terms between harmonics cancel only if the longitudes are uniform. An activity cycle (a time-varying emergence rate) or active longitudes that persist in the rotating frame would make the process non-stationary, which calls for a different kernel rather than a different parameter distribution. The latitude distribution is a modeling choice: in the analysis of this paper we assume a uniform latitude destribution, however this assumption can easily be modified for distributions (e.g. to assume active spot latitudes as oserved on the Sun).
+
+Each of these assumptions is a separate component of our \code{spotgp} implementation. Users can change the latitude distribution, the envelope, or the visibility function by defining their own subclass of \code{LatitudeDistributionFunction}, \code{EnvelopeFunction}, or \code{VisibilityFunction}, without modifying the kernel or solver code. \citet{birky_spotgp_2026} describes these interfaces.
 
 \vspace{\baselineskip}
 % ========================================================================================
@@ -1176,38 +1250,9 @@ so that the diagonal occupies row $d = 0$ and the $d$-th sub-diagonal occupies r
 
 We implement the banded Cholesky factorization using \code{jax.lax.scan} over columns: at each column $j$, the diagonal and the $b$ sub-diagonal entries are updated using only the $(b \times b)$ block of previously computed entries within the band.  The entire factorization is JIT-compiled and end-to-end differentiable via JAX's automatic differentiation, enabling gradient-based sampling with no additional implementation effort.  The forward and backward triangular solves ($L\mathbf{y} = \mathbf{r}$ and $L^\top \mathbf{x} = \mathbf{y}$) similarly operate on the compact storage, restricting each dot product to at most $b$ terms.
 
-
-% % -----------------------------------------------
-% \subsection{Software Architecture} \label{sec:software}
-
-% \begin{figure*}[ht!]
-%     \centering
-%     \includegraphics[width=\linewidth]{figures/architecture.pdf}
-%     \caption{Architecture of the \code{spotgp} package. The core components are the \texttt{Kernel} class, which computes the covariance matrix from the kernel function; the \texttt{GPSolver} class, which performs Cholesky factorization and solves for the GP posterior; and the MCMC sampling module, which uses NUTS to sample the kernel hyperparameters. The kernel is constructed from modular components: the envelope autocorrelation $R_\Gamma(\tau)$, the amplitude parameterization (e.g., Fourier coefficients), and the latitude distribution $p(\Phi)$. Each component can be independently modified or extended without affecting the overall architecture.}
-%     \label{fig:spotgp_flowchart}
-% \end{figure*}
-
-We implement the kernel derivation and GP inference framework described above in the open-source Python package \code{spotgp}. The package is designed with a modular architecture so that each physical assumption (envelope shape, amplitude parameterization, latitude distribution) can be swapped independently without modifying the kernel or solver code. For a detailed description of the code modules and how to implement custom kernel components, we refer the reader to our software paper (J. Birky et al. 2026, in preparation).
-
-% Figure~\ref{fig:spotgp_flowchart} illustrates the data flow through the main components, which we describe below.
-
-% % ------------------------------------------------------------------
-% \subsection{Custom Model Components} \label{sec:custom_components}
-
-% The modularity of the implementation mirrors the structure of the kernel itself: Eq.~\eqref{eq:kernel_full} consumes each physical ingredient only through a narrow interface: the envelope autocorrelation $R_\Gamma(\tau)$, the squared visibility coefficients $|c_n(I,\Phi)|^2$ with the rotation law $\omega_0(\Phi)$, and the latitude weights $p(\Phi)$, so each ingredient is represented by an abstract base class, and swapping a physical assumption means passing a different subclass to \code{SpotEvolutionModel}. Neither the kernel evaluation, the latitude quadrature, nor the solver needs to know which concrete model is in use.
-
-% \begin{itemize}[leftmargin=2em]
-%     \item \textbf{Envelope functions} subclass \code{EnvelopeFunction} and provide the normalized squared spot-size profile $\Gamma(t)$ together with a \code{param\_dict} naming the free shape parameters (e.g., $\ell_{\rm spot}$, $\tau_{\rm spot}$), which are thereby exposed to the sampler. A subclass may supply a closed-form, JAX-traceable autocorrelation $R_\Gamma(\tau)$; if it does not, the package falls back to evaluating $R_\Gamma$ numerically from $\Gamma(t)$ via FFT, so any profile shape is usable at the cost of the analytic fast path.
-%     \item \textbf{Latitude distribution functions} subclass \code{LatitudeDistributionFunction} and override the density $p(\Phi)$ and, optionally, the latitude range and free parameters. Distributions with free parameters (e.g., the edges of an active-latitude band) are sampled alongside the kernel hyperparameters; the latitude quadrature then applies the current weights at every likelihood evaluation.
-%     \item \textbf{Visibility functions} subclass \code{VisibilityFunction}, which provides the analytic small-spot coefficients of Eq.~\eqref{eq:cn_general} and the differential rotation law $\omega_0(\Phi)$. A subclass overrides \code{cn\_squared} and, to participate in gradient-based fitting, defines the \code{cn\_sq\_jax} hook: a JAX-traceable map from the visibility's slice of the parameter vector to $|c_n|^2$, which the kernel detects and routes the latitude-averaged covariance through automatically. Coefficients without a closed form (limb darkening beyond the quadratic law, finite spot size) are evaluated by sampling the visibility profile over one rotation and taking its discrete Fourier transform, as described in Paper~II.
-% \end{itemize}
-
-% The base \code{VisibilityFunction} and \code{LatitudeDistributionFunction} classes are themselves usable defaults (the analytic small-spot visibility and the uniform latitude distribution); \code{EnvelopeFunction} is abstract. The concrete implementations of each component type available in the current release of \code{spotgp}, together with the location where each is derived, are tabulated in Paper~II, whose composite kernels (the \code{Term} layer: several spot populations sharing one geometry, or additive non-spot components) consume these components through the same interfaces, so custom components propagate to those models without modification.
+We implement the kernel derivation and GP inference framework described above in the open-source Python package \code{spotgp}. The package is designed with a modular architecture so that each physical assumption (envelope shape, amplitude parameterization, latitude distribution) can be swapped independently without modifying the kernel or solver code. For a detailed description of the code modules and how to implement custom kernel components, we refer the reader to our software paper \citep{birky_spotgp_2026}.
 
 
-% ------------------------------------------------------------------
-% \vspace{\baselineskip}
-% ========================================================================================
 % \vspace{\baselineskip}
 \clearpage
 % ========================================================================================
@@ -1433,7 +1478,7 @@ In \code{starry\_process}, the surface statistics are controlled by the angular 
 The \code{starry\_process} covariance matrix $\boldsymbol{\Sigma}_f$ is dense and generally $O(N^3)$ to factorize, as it is for any GP. The computational advantage of that framework lies in the analytic evaluation of the matrix entries (avoiding numerical integration over the stellar surface). Our kernel shares this advantage -- its evaluation reduces to sums of cosines weighted by tabulated Fourier coefficients -- but additionally benefits from sparsity: $K(\tau) = 0$ for $|\tau| > \ell_{\rm spot} + 2\tau_{\rm spot}$, which produces a banded covariance matrix with bandwidth $b = (\ell_{\rm spot} + 2\tau_{\rm spot})/\Delta t$. This enables $O(Nb^2)$ Cholesky factorization via banded linear algebra, a significant speedup for long time series with fine cadence.
 
 \textit{Degeneracies and information content: }
-\citet{luger_mapping_2021} showed that there exist fundamental degeneracies in mapping stellar surfaces from disk-integrated photometry alone: infinitely many surface maps can produce identical lightcurves. These degeneracies persist in both frameworks. In \code{starry\_process}, they manifest as a null space of the design matrix $\mathbf{A}$; in our model, they appear as the well-known degeneracy between $N_{\rm spot}$, $f_{\rm spot}$, and $\alpha_{\max}$ (which are absorbed into the single amplitude parameter $\sigma_k^2$; Eq.~\ref{eq:kernel_amplitude}), and the fact that the kernel constrains only the latitude-averaged squared Fourier coefficients $\langle |c_n|^2 \rangle_\Phi$, not the surface map itself. However, our kernel provides direct constraints on \emph{temporal} properties (spot lifetime, evolution timescale, differential rotation) that are not accessible from the static surface model of \code{starry\_process}.
+\citet{luger_mapping_2021} showed that there exist fundamental degeneracies in mapping stellar surfaces from disk-integrated photometry alone: infinitely many surface maps can produce identical lightcurves. These degeneracies persist in both frameworks. In \code{starry\_process}, they manifest as a null space of the design matrix $\mathbf{A}$; in our model, they appear as the well-known degeneracy between $N_{\rm spot}$, $f_{\rm spot}$, and $\alpha_{\max}$ (which are absorbed into the single amplitude parameter $\sigma_k^2$), and the fact that the kernel constrains only the latitude-averaged squared Fourier coefficients $\langle |c_n|^2 \rangle_\Phi$, not the surface map itself. However, our kernel provides direct constraints on \emph{temporal} properties (spot lifetime, evolution timescale, differential rotation) that are not accessible from the static surface model of \code{starry\_process}.
 
 
 \vspace{\baselineskip}
@@ -1473,7 +1518,19 @@ Even though we are only modeling a six parameter kernel model, there are many po
 
 Before performing MCMC sampling (which is computationally intensive to do across a wide parameter space), we can first test the theoretical identifiability of the parameters by computing the Fisher information matrix (Eq.~\ref{eq:fisher}) across a grid of parameters. The inverse of the Fisher information matrix gives the Cramér--Rao lower bound on the covariance of any unbiased estimator of the parameters, which provides a theoretical limit on how well we can constrain the parameters from data generated by our model. By analyzing the eigenvalues and eigenvectors of the Fisher information matrix, we can identify which combinations of parameters are most and least identifiable, and how this depends on the underlying spot parameters. This analysis will inform our expectations for MCMC sampling and help us interpret the results in terms of parameter degeneracies and uncertainties.
 
-To systematically explore parameter space, we draw $N = 4096$ parameter combinations from a scrambled Sobol quasi-random sequence spanning the bounds listed in Table~\ref{tab:crb_bounds}. For each sample $\boldsymbol{\theta}_k$, we construct a synthetic lightcurve of duration $T_{\rm sim} = 365$~d sampled at a cadence of $\Delta t = 0.5$~d (i.e., $N_t = 730$ observations) with white noise $\sigma_n = 10^{-4}$ and a mean spot emergence rate of $\dot{N}_{\rm spot} = 0.25$~d$^{-1}$. We then evaluate the expected Fisher information matrix $\mathcal{I}(\boldsymbol{\theta}_k)$ via Eq.~\eqref{eq:fisher} and invert it to obtain the CRB covariance matrix $\Sigma_{\rm CRB} = \mathcal{I}^{-1}$. Cases where any eigenvalue of $\mathcal{I}$ falls below a regularization floor of $10^{-6}$ are flagged as numerically singular and excluded from the analysis, as the corresponding CRB is unreliable. From the CRB covariance we extract the marginal standard deviations $\sigma_{\rm CRB}(\theta_i) = \sqrt{\Sigma_{ii}}$ and the pairwise Pearson correlation coefficients $r_{ij} = \Sigma_{ij}/(\sigma_i \sigma_j)$ for all parameter pairs.
+To systematically explore parameter space, we draw $N = 4096$ parameter combinations from a scrambled Sobol quasi-random sequence spanning the bounds listed in Table~\ref{tab:crb_bounds}. Sampling $\ell_{\rm spot}$ and $\tau_{\rm spot}$ independently would leave their sum sparse at both ends of its range, so we instead draw the total spot lifetime $\ell_{\rm spot} + 2\tau_{\rm spot}$ uniformly over $[3, 300]$\,d, draw $\ell_{\rm spot}$ uniformly from the values that keep both timescales within their bounds, and set $\tau_{\rm spot}$ from the remainder. For each sample $\boldsymbol{\theta}_k$, we construct a synthetic lightcurve of duration $T_{\rm sim} = 365$~d sampled at a cadence of $\Delta t = 0.5$~d (i.e., $N_t = 730$ observations) with white noise $\sigma_n = 10^{-4}$ and a mean spot emergence rate of $\dot{N}_{\rm spot} = 0.25$~d$^{-1}$. We then evaluate the expected Fisher information matrix $\mathcal{I}(\boldsymbol{\theta}_k)$ via Eq.~\eqref{eq:fisher} and invert it to obtain the CRB covariance matrix $\Sigma_{\rm CRB} = \mathcal{I}^{-1}$. Cases where any eigenvalue of $\mathcal{I}$ falls below a regularization floor of $10^{-6}$ are flagged as numerically singular and excluded from the analysis, as the corresponding CRB is unreliable. From the CRB covariance we extract the marginal standard deviations $\sigma_{\rm CRB}(\theta_i) = \sqrt{\Sigma_{ii}}$ and the pairwise Pearson correlation coefficients $r_{ij} = \Sigma_{ij}/(\sigma_i \sigma_j)$ for all parameter pairs.
+
+% -----------------------------------------------
+\subsection{CRB results} \label{sec:crb_corner}
+
+To visualize the CRB parameter sweep, we compute two dimensional projections between each combination of parameters. Each panel of the corner plots projects the six-dimensional sweep onto a pair of parameters, with the two envelope timescales combined into the total spot lifetime $\ell_{\rm spot} + 2\tau_{\rm spot}$. The samples are divided into a $20 \times 20$ grid of equal-width bins, about 10 samples per bin, and the color shows the mean of $\log_{10}\sigma_{\rm CRB}$ in each bin. The other four parameters vary freely within a bin, so this mean marginalizes over them, weighted uniformly across their sweep ranges. A panel therefore shows the typical bound at each pair of values, not the bound with the remaining parameters held fixed. The binned means are smoothed with a Gaussian kernel of width 1.5 bins, normalized by the smoothed bin occupancy so that only occupied bins contribute, and any empty bin is masked and drawn in gray.
+
+\textbf{Solar versus anti-solar shear:} At long periods the bound on $\kappa$ depends on its sign (the $\kappa$--$P_{\rm eq}$ panel of Fig.~\ref{fig:crb_sweep_corner_kappa}). For $|\kappa| > 0.4$, the median $\sigma_{\rm CRB}(\kappa)$ for solar-like shear exceeds that for anti-solar shear of the same magnitude. 
+The spread of rotation frequencies does not explain it. The frequency $\omega_0(\Phi) = 2\pi(1 - \kappa\sin^2\Phi)/P_{\rm eq}$ is linear in $\kappa$, so both the sensitivity $\partial\omega_0/\partial\kappa = -2\pi\sin^2\Phi/P_{\rm eq}$ and the dephasing rate (Eq.~\ref{eq:phase_spread}) depend only on $|\kappa|$. What does depend on the sign is where in frequency the high-latitude spots sit, and these spots carry all of the leverage on $\kappa$. For $\kappa > 0$ they rotate more slowly than the equator, down to $\omega_0 = (1 - \kappa)\,2\pi/P_{\rm eq}$ at the pole. For $\kappa < 0$ they rotate faster, up to $(1 + |\kappa|)\,2\pi/P_{\rm eq}$.
+
+A spot that completes fewer than one or two rotations during its lifetime contributes a term $\cos(\omega_0\tau)R_\Gamma(\tau) \approx R_\Gamma(\tau)(1 - \omega_0^2\tau^2/2)$. This term is nearly indistinguishable from the aperiodic $n = 0$ term, and its derivative with respect to $\omega_0$ vanishes as $\omega_0 \to 0$. In the power spectrum, the fundamental peak from those latitudes merges with the zero-frequency peak from spot evolution, whose width is $\sim 1/\ell_{\rm spot}$.
+
+The controlling quantity is the number of polar rotations per spot lifetime, $(\ell_{\rm spot} + 2\tau_{\rm spot})(1 - \kappa)/P_{\rm eq}$. At $P_{\rm eq} = 40$\,d the polar period is 100\,d for $\kappa = 0.6$ and 25\,d for $\kappa = -0.6$. At $P_{\rm eq} \lesssim 10$\,d the polar spots of most samples still complete many rotations per lifetime. There the asymmetry is confined to $\kappa \gtrsim 0.6$, where the polar period $P_{\rm eq}/(1 - \kappa)$ diverges.
 
 \begin{table}[ht!]
     \centering
@@ -1495,33 +1552,33 @@ To systematically explore parameter space, we draw $N = 4096$ parameter combinat
 
 \begin{figure}[ht!]
     \centering
-    \script{plot_crb_param_sweep.py}
-    \includegraphics[width=\linewidth]{figures/crb_sweep_corner_contour_kappa.png}
-    \caption{Cramér--Rao bound parameter sweep corner plot showing the theoretical lower bounds for $\kappa$ uncertainty across different parameter regimes. To compute the average percent uncertainty for each parameter region, we computed 4096 simulations within the bounds of Table~\ref{tab:crb_bounds} using Sobol quasi-random sampling. The average percent uncertainty on $\kappa$ is indicated by the color scale, with dark blue indicating tighter constraints and dark red indicating looser constraints. For some regions, with short periods ($P_{\rm eq} \lesssim 20$), long spot lifetimes ($\ell_{\rm spot} + 2 \tau_{\rm spot} \gtrsim 10 P_{\rm eq}$), and high inclinations ($I \gtrsim 45\,$deg), the differential rotation shear $\kappa$ can theoretically be constrained within $\lesssim 10\%$ uncertainty.}
+    \script{plot_crb_param_sweep_abs.py}
+    \includegraphics[width=\linewidth]{figures/crb_sweep_corner_contour_abs_kappa.png}
+    \caption{Cramér--Rao lower bound on the differential rotation shear, $\sigma_{\rm CRB}(\kappa)$, across the 4096 Sobol samples drawn within the bounds of Table~\ref{tab:crb_bounds}. The color scale gives the bin-averaged $\log_{10}\sigma_{\rm CRB}(\kappa)$, with dark blue indicating tighter constraints and dark red indicating looser constraints. For short periods ($P_{\rm eq} \lesssim 20$\,d), long spot lifetimes ($\ell_{\rm spot} + 2 \tau_{\rm spot} \gtrsim 10 P_{\rm eq}$), and high inclinations ($I \gtrsim 45^\circ$), the bound is typically $\sigma_{\rm CRB}(\kappa) \approx 0.01$, falling to $\approx 0.002$ for $P_{\rm eq} \lesssim 5$\,d; for $P_{\rm eq} \gtrsim 40$\,d it rises to $\gtrsim 0.3$. }
     \label{fig:crb_sweep_corner_kappa}
 \end{figure}
 
 \begin{figure}[ht!]
     \centering
-    \script{plot_crb_param_sweep.py}
-    \includegraphics[width=\linewidth]{figures/crb_sweep_corner_contour_inc.png}
-    \caption{Same as Fig.~\ref{fig:crb_sweep_corner_kappa}, colored by inclination $I$.}
+    \script{plot_crb_param_sweep_abs.py}
+    \includegraphics[width=\linewidth]{figures/crb_sweep_corner_contour_abs_inc.png}
+    \caption{Same as Fig.~\ref{fig:crb_sweep_corner_kappa}, for the bound on the inclination, $\sigma_{\rm CRB}(I)$ in degrees. The bound is $\approx 1^\circ$ for $P_{\rm eq} \lesssim 10$\,d and loosens toward long periods and short spot lifetimes. It grows toward edge-on viewing, from $\approx 2^\circ$ at $I \lesssim 25^\circ$ to $\approx 4^\circ$ at $I \approx 45^\circ$--$65^\circ$ and $\gtrsim 10^\circ$ above $80^\circ$: for a latitude distribution symmetric about the equator the kernel is unchanged under $I \to 180^\circ - I$, so its derivative with respect to $I$ vanishes at $I = 90^\circ$. For $I \gtrsim 80^\circ$ the bound exceeds the distance to edge-on, $90^\circ - I$, in most samples, so there the local Gaussian bound is not meaningful and the posterior is instead limited by the $I = 90^\circ$ boundary.}
     \label{fig:crb_sweep_corner_inc}
 \end{figure}
 
 \begin{figure}[ht!]
     \centering
-    \script{plot_crb_param_sweep.py}
-    \includegraphics[width=\linewidth]{figures/crb_sweep_corner_contour_peq.png}
-    \caption{Same as Fig.~\ref{fig:crb_sweep_corner_kappa}, colored by $P_{\rm eq}$. $P_{\rm eq}$ is by far the easiest of the parameters to constrain. With the exception of a few regions, e.g., systems with short spot lifetimes relative to their period ($\ell_{\rm spot} + 2\tau_{\rm spot} \lesssim P_{\rm eq}$), at pole-on inclinations ($I \lesssim 30\,$deg), the equitorial period can generally be constrained to better than 10\% uncertainty,and in many cases better than 1\% uncertainty.}
+    \script{plot_crb_param_sweep_abs.py}
+    \includegraphics[width=\linewidth]{figures/crb_sweep_corner_contour_abs_peq.png}
+    \caption{Same as Fig.~\ref{fig:crb_sweep_corner_kappa}, for the bound on the equatorial period, $\sigma_{\rm CRB}(P_{\rm eq})$ in days. $P_{\rm eq}$ is by far the easiest of the parameters to constrain. The bound grows steeply with the period itself, from $\approx 0.002$\,d at $P_{\rm eq} \lesssim 5$\,d to $\approx 0.7$\,d at $P_{\rm eq} \approx 20$--30\,d and $\approx 4$\,d at $P_{\rm eq} \gtrsim 40$\,d, and is nearly independent of $\kappa$ and $\sigma_k$. It loosens most at pole-on inclinations ($I \lesssim 10^\circ$), where the rotational harmonics carry little power, and for spots that do not survive a full rotation ($\ell_{\rm spot} + 2\tau_{\rm spot} \lesssim P_{\rm eq}$), where it exceeds the 50\,d width of the sweep and the period is effectively unconstrained.}
     \label{fig:crb_sweep_corner_peq}
 \end{figure}
 
 \begin{figure}[ht!]
     \centering
-    \script{plot_crb_param_sweep.py}
-    \includegraphics[width=\linewidth]{figures/crb_sweep_corner_contour_sigma_k.png}
-    \caption{Same as Fig.~\ref{fig:crb_sweep_corner_kappa}, colored by $\sigma_k$.}
+    \script{plot_crb_param_sweep_abs.py}
+    \includegraphics[width=\linewidth]{figures/crb_sweep_corner_contour_abs_sigma_k.png}
+    \caption{Same as Fig.~\ref{fig:crb_sweep_corner_kappa}, for the bound on the kernel amplitude, $\sigma_{\rm CRB}(\sigma_k)$. As expected for an amplitude, the bound scales nearly in proportion to $\sigma_k$ itself, from $\approx 0.002$ for $\sigma_k \lesssim 0.1$ to $\approx 0.035$ for $\sigma_k \gtrsim 0.8$, so the bottom row is dominated by the amplitude. At fixed $\sigma_k$ the bound depends only weakly on the other parameters, loosening for short spot lifetimes, especially at long periods.}
     \label{fig:crb_sweep_corner_sigma_k}
 \end{figure}
 
@@ -1592,7 +1649,7 @@ The six free kernel hyperparameters, $P_{\rm eq}$, $\kappa$, $I$, $\ell_{\rm spo
 Because the kernel $\mathcal{K}(\tau)$ has compact support (set by the spot lifetime $\ell_{\rm spot} + 2\tau_{\rm spot}$), the covariance matrix is banded with bandwidth $b \propto (\ell_{\rm spot} + 2\tau_{\rm spot})/\Delta t$. Exploiting this structure, we implemented a banded Cholesky solver that reduces the GP inference cost from $\mathcal{O}(N^3)$ to $\mathcal{O}(Nb^2)$. The solver is fully JIT-compiled and autodifferentiable via JAX, enabling gradient-based sampling with no additional implementation effort.
 
 \textbf{Inference conditions and Cram\'{e}r--Rao bounds (Sections~\ref{sec:inference_conditions}--\ref{sec:cranmer_rao}).}
-Using synthetic lightcurves, we showed that reliable kernel estimation requires observation baselines spanning at least $\sim$10--20 spot lifetimes with noise levels $\sigma_{\rm noise} \lesssim 10^{-2}$ in relative flux. We computed the Cram\'{e}r--Rao lower bound across a grid of 4096 parameter combinations and found that the differential rotation coefficient $\kappa$ is best constrained for short-period stars ($P_{\rm eq} \lesssim 20$\,d) with long-lived spots and moderate-to-high inclinations, where $\kappa$ can theoretically be measured to $\lesssim 10\%$ uncertainty.
+Using synthetic lightcurves, we showed that reliable kernel estimation requires observation baselines spanning at least $\sim$10--20 spot lifetimes with noise levels $\sigma_{\rm noise} \lesssim 10^{-2}$ in relative flux. We computed the Cram\'{e}r--Rao lower bound across a grid of 4096 parameter combinations and found that the differential rotation coefficient $\kappa$ is best constrained for short-period stars ($P_{\rm eq} \lesssim 20$\,d) with long-lived spots and moderate-to-high inclinations, where the bound is $\sigma_{\rm CRB}(\kappa) \approx 0.01$ (and $\approx 0.002$ for $P_{\rm eq} \lesssim 5$\,d). The bound on the inclination is a few degrees over most of the sweep but diverges toward edge-on viewing, where the kernel is insensitive to $I$.
 
 \textbf{Application to real data (Paper~II).}
 The companion paper extends the kernel into an additive composite model, with several spot populations sharing one stellar geometry and with granulation and white-noise terms, and applies the framework to the four-year \kepler lightcurve of Kepler-63, comparing the inferred inclination, differential rotation, and spot lifetimes with independent constraints from spectroscopy and transit spot mapping.

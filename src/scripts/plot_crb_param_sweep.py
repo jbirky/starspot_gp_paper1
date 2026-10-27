@@ -2,7 +2,9 @@
 Corner plots of the fractional Cramer-Rao bound across the Sobol parameter sweep.
 
 Each panel bins the sweep in a pair of the derived variables and colors it by
-the mean of log10(sigma_crb / |true|) for one parameter.
+the mean of log10(sigma_crb / |true|) for one parameter.  The two sparse end
+bins of l_spot + 2 tau_spot are left out.  The smoothing uses only bins that
+contain samples; empty bins are masked and drawn gray.
 
 Input:
     data/crb_sobol_sweep_365_4096.csv   (from crb_compute_parameter_sweep.py)
@@ -38,14 +40,22 @@ plt.rcParams.update({
 
 
 def corner_variables(sims):
-    """Derived quantities shown on the corner plot axes."""
+    """Derived quantities shown on the corner plot axes, and whether to trim
+    their end bins.  l_spot + 2 tau_spot is a sum of two uniform draws, so its
+    density falls to zero at both ends and its end bins are nearly empty."""
     return [
-        (r"$P_{\rm eq}$",                      sims["true_peq"]),
-        (r"$l_{\rm spot} + 2\tau_{\rm spot}$", sims["true_lspot"] + 2*sims["true_tau_spot"]),
-        (r"$i\ \rm (deg)$",                    sims["true_inc"] * 180/np.pi),
-        (r"$\kappa$",                          sims["true_kappa"]),
-        (r"$\sigma_k$",                        sims["true_sigma_k"]),
+        (r"$P_{\rm eq}$",                      sims["true_peq"],                             False),
+        (r"$l_{\rm spot} + 2\tau_{\rm spot}$", sims["true_lspot"] + 2*sims["true_tau_spot"], True),
+        (r"$i\ \rm (deg)$",                    sims["true_inc"] * 180/np.pi,                 False),
+        (r"$\kappa$",                          sims["true_kappa"],                           False),
+        (r"$\sigma_k$",                        sims["true_sigma_k"],                         False),
     ]
+
+
+def bin_edges(data, bins, trim):
+    """Equal-width bin edges over the data range; ``trim`` drops the two end bins."""
+    edges = np.linspace(data.min(), data.max(), bins + 1)
+    return edges[1:-1] if trim else edges
 
 
 def plot_crb_corner(sims, param, title, cbar_label, savename,
@@ -67,17 +77,21 @@ def plot_crb_corner(sims, param, title, cbar_label, savename,
         for col in range(n-1):
             ax = axes[row, col]
             if col <= row:
-                x_label, x_data = variables[col]
-                y_label, y_data = variables[row+1]
+                x_label, x_data, x_trim = variables[col]
+                y_label, y_data, y_trim = variables[row+1]
                 stat, xedges, yedges, _ = binned_statistic_2d(
-                    x_data, y_data, z, statistic='mean', bins=bins
+                    x_data, y_data, z, statistic='mean',
+                    bins=[bin_edges(x_data, bins, x_trim), bin_edges(y_data, bins, y_trim)]
                 )
-                stat_smooth = gaussian_filter(
-                    np.where(np.isnan(stat), np.nanmean(stat), stat), sigma=smooth
-                )
+                # smooth over the occupied bins only, then mask the empty ones
+                filled = np.isfinite(stat)
+                num = gaussian_filter(np.where(filled, stat, 0.0), sigma=smooth)
+                den = gaussian_filter(filled.astype(float), sigma=smooth)
+                stat_smooth = np.ma.masked_array(num / den, mask=~filled)
                 # bin centres for contour
                 xc = 0.5 * (xedges[:-1] + xedges[1:])
                 yc = 0.5 * (yedges[:-1] + yedges[1:])
+                ax.set_facecolor("0.8")   # empty bins, distinct from the white mid-color
                 last_cf = ax.contourf(xc, yc, stat_smooth.T, levels=levels,
                                       cmap="RdBu_r", vmin=vmin, vmax=vmax, extend="both")
                 ax.contour(xc, yc, stat_smooth.T, levels=levels,

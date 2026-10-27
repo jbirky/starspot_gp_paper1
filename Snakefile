@@ -15,6 +15,19 @@ rule crb_corner_plots:
     shell:
         "python {input[0]}"
 
+# The same four corner plots, colored by the absolute rather than fractional CRB.
+rule crb_corner_plots_abs:
+    input:
+        "src/scripts/plot_crb_param_sweep_abs.py",
+        "src/data/crb_sobol_sweep_365_4096.csv",
+    output:
+        "src/tex/figures/crb_sweep_corner_contour_abs_kappa.png",
+        "src/tex/figures/crb_sweep_corner_contour_abs_inc.png",
+        "src/tex/figures/crb_sweep_corner_contour_abs_peq.png",
+        "src/tex/figures/crb_sweep_corner_contour_abs_sigma_k.png",
+    shell:
+        "python {input[0]}"
+
 # The script takes the sampling cadence [d] as its argument; the figure shows two.
 rule kernel_mse_vs_ndata:
     input:

@@ -99,14 +99,34 @@ bounds = dict(
 )
 
 N_SAMPLES = 4096   # must be a power of 2 for Sobol sequences
+SEED = 42
 
 param_names = list(param_labels.keys())
-lo = np.array([bounds[k][0] for k in param_names])
-hi = np.array([bounds[k][1] for k in param_names])
 
-sampler   = Sobol(d=len(param_names), scramble=True)
-unit_cube = sampler.random(N_SAMPLES)          # shape (N_SAMPLES, n_params) in [0, 1)
-param_grid = lo + (hi - lo) * unit_cube        # scale to parameter bounds  
+# lspot + 2 tau_spot is sampled uniformly, rather than lspot and tau_spot
+# separately, so the corner plots' lifetime axis is evenly covered (a sum of two
+# uniform draws is sparse at both ends).  Sobol dimensions, with the five plotted
+# variables first (early dimensions have the best-stratified 2-D projections):
+# peq, L = lspot + 2 tau_spot, inc, kappa, sigma_k, then the share of L that goes
+# to lspot.
+L_bounds = (bounds["lspot"][0] + 2*bounds["tau_spot"][0],
+            bounds["lspot"][1] + 2*bounds["tau_spot"][1])      # (3, 300) d
+
+u = Sobol(d=6, scramble=True, seed=SEED).random(N_SAMPLES)    # (N_SAMPLES, 6) in [0, 1)
+
+def scale(x, key):
+    return bounds[key][0] + (bounds[key][1] - bounds[key][0]) * x
+
+L = L_bounds[0] + (L_bounds[1] - L_bounds[0]) * u[:, 1]
+# split L uniformly over the lspot values that keep both lspot and tau_spot in bounds
+lspot_lo = np.maximum(bounds["lspot"][0], L - 2*bounds["tau_spot"][1])
+lspot_hi = np.minimum(bounds["lspot"][1], L - 2*bounds["tau_spot"][0])
+lspot = lspot_lo + (lspot_hi - lspot_lo) * u[:, 5]
+
+columns = dict(peq=scale(u[:, 0], "peq"), kappa=scale(u[:, 3], "kappa"),
+               inc=scale(u[:, 2], "inc"), lspot=lspot, tau_spot=(L - lspot) / 2,
+               sigma_k=scale(u[:, 4], "sigma_k"))
+param_grid = np.column_stack([columns[k] for k in param_names])
 
 # ===========================================================================================
 # Run parameter sweep and save results

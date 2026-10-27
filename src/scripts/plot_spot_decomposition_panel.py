@@ -1,10 +1,11 @@
 """
 Decomposition of the single-spot projected area signal A(t)
 into the normalized squared spot-size envelope Gamma(t) = alpha^2(t) / alpha_max^2
-and the visibility function Pi(t) = max{cos(beta(t)), 0}, for the trapezoidal
-and exponential envelope models (2 columns).
+and the visibility function Pi(t) = max{cos(beta(t)), 0}, for the trapezoidal,
+exponential, and skew-normal envelope models (3 columns).
 """
 import numpy as np
+from scipy.special import erf
 import matplotlib.pyplot as plt
 import matplotlib
 import paths
@@ -52,6 +53,17 @@ def exponential_alpha(t, tau_max, tau_em, tau_dec, alpha_max):
     return alpha
 
 
+def skew_normal_alpha(t, t_ref, sigma_sn, n_sn, alpha_max):
+    """
+    Skew-normal spot-size evolution (Forgacs-Dajka et al. 2021, Eq. 1),
+    applied to the squared radius alpha^2 (i.e. the spot area).
+    n_sn > 0: rapid rise / slow decay; n_sn < 0: slow rise / rapid decay.
+    """
+    z = (t - t_ref) / sigma_sn
+    S = np.exp(-z**2 / 2) * (1 + erf(n_sn * z / np.sqrt(2)))
+    return alpha_max * np.sqrt(np.maximum(S, 0) / S.max())
+
+
 # ── Visibility function ─────────────────────────────────────────
 
 def visibility(t, inc, Phi, Lambda0, P):
@@ -79,6 +91,11 @@ tau_max_exp = 20.0
 tau_em_exp = 2.5
 tau_dec_exp = 2.5
 
+# Skew-normal params
+sigma_sn = 10.0       # scale [days]
+n_sn = 3.0            # skewness (> 0: rapid rise / slow decay)
+t_ref_sn = -10.0      # location, chosen to center the profile in the window
+
 # Time array
 total_dur = lspot_trap + tau_em_trap + tau_dec_trap + 10
 t = np.linspace(-total_dur / 2, total_dur / 2, 8000)
@@ -87,26 +104,29 @@ t = np.linspace(-total_dur / 2, total_dur / 2, 8000)
 
 alpha_trap = trapezoidal_alpha(t, lspot_trap, tau_em_trap, tau_dec_trap, alpha_max)
 alpha_exp = exponential_alpha(t, tau_max_exp, tau_em_exp, tau_dec_exp, alpha_max)
+alpha_sn = skew_normal_alpha(t, t_ref_sn, sigma_sn, n_sn, alpha_max)
 Gamma_trap = (alpha_trap / alpha_max)**2
 Gamma_exp = (alpha_exp / alpha_max)**2
+Gamma_sn = (alpha_sn / alpha_max)**2
 Pi = visibility(t, inc, Phi, Lambda0, P)
 A_trap = Gamma_trap * Pi
 A_exp = Gamma_exp * Pi
+A_sn = Gamma_sn * Pi
 
 # ── Figure ──────────────────────────────────────────────────────
 
-fig, axes = plt.subplots(3, 2, figsize=(12, 8), sharex=True,
+fig, axes = plt.subplots(3, 3, figsize=(17, 8), sharex=True,
                          gridspec_kw={'hspace': 0.08, 'wspace': 0.25})
 
 label_fs = 16
 title_fs = 18
 tick_fs = 12
 
-titles = ['Trapezoidal', 'Exponential']
-Gammas = [Gamma_trap, Gamma_exp]
-As = [A_trap, A_exp]
+titles = ['Trapezoidal', 'Exponential', 'Skew-normal']
+Gammas = [Gamma_trap, Gamma_exp, Gamma_sn]
+As = [A_trap, A_exp, A_sn]
 
-for col in range(2):
+for col in range(3):
     # Top: Gamma(t)
     axes[0, col].plot(t, Gammas[col], color='black', lw=1.5)
     axes[0, col].set_title(titles[col], fontsize=title_fs, pad=8)
