@@ -112,9 +112,6 @@ A Starspot Kernel with Differential Rotation}
 \author[0000-0001-6487-5445]{Rory Barnes}
 \affiliation{Department of Astronomy, University of Washington, 3910 15th Avenue NE, Seattle, WA 98195, USA}
 \email{rkb9@uw.edu}
-\author[0000-0002-0637-835X]{James Davenport}
-\affiliation{Department of Astronomy, University of Washington, 3910 15th Avenue NE, Seattle, WA 98195, USA}
-\email{jrad@uw.edu}
 \author[0000-0001-9590-2274]{Sean Matt}
 \affiliation{Homer L. Dodge Department of Physics and Astronomy, University of Oklahoma, Norman, OK 73019, USA}
 \email{sean@ou.edu}
@@ -1354,45 +1351,6 @@ Table~\ref{tab:kernel_speed} benchmarks the computational speed of evaluating th
     \label{fig:kernel_vary_grid}
 \end{figure}
 
-% \begin{figure}[ht!]
-%     \centering
-%     \script{analytic_vs_numerical_kernel.py}
-%     \includegraphics[width=0.95\linewidth]{figures/fig_kernel_comparison_vary_peq.pdf}
-%     \caption{Analytic (dashed) vs.\ numerical Monte Carlo (solid) kernel comparison, varying $P_{\rm eq} \in \{3, 5, 10\}$~d. The numerical kernel is computed using $N_{\rm sim} = 500$ simulations. \textit{Left:} Autocorrelation function. \textit{Right:} Power spectral density. Vertical dotted lines mark the rotation frequency and its first harmonic.}
-%     \label{fig:kernel_vary_peq}
-% \end{figure}
-
-% \begin{figure}[ht!]
-%     \centering
-%     \script{analytic_vs_numerical_kernel.py}
-%     \includegraphics[width=0.95\linewidth]{figures/fig_kernel_comparison_vary_kappa.pdf}
-%     \caption{Same as Fig.~\ref{fig:kernel_vary_peq}, varying differential rotation shear $\kappa \in \{-1.0, 0.0, 1.0\}$.}
-%     \label{fig:kernel_vary_kappa}
-% \end{figure}
-
-% \begin{figure}[ht!]
-%     \centering
-%     \script{analytic_vs_numerical_kernel.py}
-%     \includegraphics[width=0.95\linewidth]{figures/fig_kernel_comparison_vary_inc.pdf}
-%     \caption{Same as Fig.~\ref{fig:kernel_vary_peq}, varying stellar inclination $I \in \{30^\circ, 60^\circ, 90^\circ\}$.}
-%     \label{fig:kernel_vary_inc}
-% \end{figure}
-
-% \begin{figure}[ht!]
-%     \centering
-%     \script{analytic_vs_numerical_kernel.py}
-%     \includegraphics[width=0.95\linewidth]{figures/fig_kernel_comparison_vary_lspot.pdf}
-%     \caption{Same as Fig.~\ref{fig:kernel_vary_peq}, varying spot plateau duration $\ell_{\rm spot} \in \{5, 15, 30\}$~d.}
-%     \label{fig:kernel_vary_lspot}
-% \end{figure}
-
-% \begin{figure}[ht!]
-%     \centering
-%     \script{analytic_vs_numerical_kernel.py}
-%     \includegraphics[width=0.95\linewidth]{figures/fig_kernel_comparison_vary_tau_spot.pdf}
-%     \caption{Same as Fig.~\ref{fig:kernel_vary_peq}, varying spot rise/decay timescale $\tau_{\rm spot} \in \{1, 3, 8\}$~d.}
-%     \label{fig:kernel_vary_tau}
-% \end{figure}
 
 \clearpage
 % -----------------------------------------------
@@ -1525,11 +1483,8 @@ To systematically explore parameter space, we draw $N = 4096$ parameter combinat
 
 To visualize the CRB parameter sweep, we compute two dimensional projections between each combination of parameters. Each panel of the corner plots projects the six-dimensional sweep onto a pair of parameters, with the two envelope timescales combined into the total spot lifetime $\ell_{\rm spot} + 2\tau_{\rm spot}$. The samples are divided into a $20 \times 20$ grid of equal-width bins, about 10 samples per bin, and the color shows the mean of $\log_{10}\sigma_{\rm CRB}$ in each bin. The other four parameters vary freely within a bin, so this mean marginalizes over them, weighted uniformly across their sweep ranges. A panel therefore shows the typical bound at each pair of values, not the bound with the remaining parameters held fixed. The binned means are smoothed with a Gaussian kernel of width 1.5 bins, normalized by the smoothed bin occupancy so that only occupied bins contribute, and any empty bin is masked and drawn in gray.
 
-\textbf{Solar versus anti-solar shear:} At long periods the bound on $\kappa$ depends on its sign (the $\kappa$--$P_{\rm eq}$ panel of Fig.~\ref{fig:crb_sweep_corner_kappa}). For $|\kappa| > 0.4$, the median $\sigma_{\rm CRB}(\kappa)$ for solar-like shear exceeds that for anti-solar shear of the same magnitude. 
+At long periods the bound on $\kappa$ depends on its sign (the $\kappa$--$P_{\rm eq}$ panel of Fig.~\ref{fig:crb_sweep_corner_kappa}). For $|\kappa| > 0.4$, the median $\sigma_{\rm CRB}(\kappa)$ for solar-like shear exceeds that for anti-solar shear of the same magnitude. 
 The spread of rotation frequencies does not explain it. The frequency $\omega_0(\Phi) = 2\pi(1 - \kappa\sin^2\Phi)/P_{\rm eq}$ is linear in $\kappa$, so both the sensitivity $\partial\omega_0/\partial\kappa = -2\pi\sin^2\Phi/P_{\rm eq}$ and the dephasing rate (Eq.~\ref{eq:phase_spread}) depend only on $|\kappa|$. What does depend on the sign is where in frequency the high-latitude spots sit, and these spots carry all of the leverage on $\kappa$. For $\kappa > 0$ they rotate more slowly than the equator, down to $\omega_0 = (1 - \kappa)\,2\pi/P_{\rm eq}$ at the pole. For $\kappa < 0$ they rotate faster, up to $(1 + |\kappa|)\,2\pi/P_{\rm eq}$.
-
-A spot that completes fewer than one or two rotations during its lifetime contributes a term $\cos(\omega_0\tau)R_\Gamma(\tau) \approx R_\Gamma(\tau)(1 - \omega_0^2\tau^2/2)$. This term is nearly indistinguishable from the aperiodic $n = 0$ term, and its derivative with respect to $\omega_0$ vanishes as $\omega_0 \to 0$. In the power spectrum, the fundamental peak from those latitudes merges with the zero-frequency peak from spot evolution, whose width is $\sim 1/\ell_{\rm spot}$.
-
 The controlling quantity is the number of polar rotations per spot lifetime, $(\ell_{\rm spot} + 2\tau_{\rm spot})(1 - \kappa)/P_{\rm eq}$. At $P_{\rm eq} = 40$\,d the polar period is 100\,d for $\kappa = 0.6$ and 25\,d for $\kappa = -0.6$. At $P_{\rm eq} \lesssim 10$\,d the polar spots of most samples still complete many rotations per lifetime. There the asymmetry is confined to $\kappa \gtrsim 0.6$, where the polar period $P_{\rm eq}/(1 - \kappa)$ diverges.
 
 \begin{table}[ht!]
@@ -1709,6 +1664,7 @@ Looking ahead, systematic application of this kernel to large photometric survey
 }
 
 \begin{acknowledgments}
+    The authors would like to acknowledge James Davenport and Tyler Gordon for their feedback in the development of this project.
     EA was supported by National Aeronautics and Space Administration Exoplanet Research Program (NASA XRP) grant 80NSSC21K1111.  This work was performed in part by the Virtual Planetary Laboratory Team, which is a member of the NASA Nexus for Exoplanet System Science, and funded via the NASA Astrobiology Program ICAR Grant 80NSSC23K1398.
 \end{acknowledgments}
 
