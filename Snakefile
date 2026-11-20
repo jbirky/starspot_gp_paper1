@@ -61,18 +61,21 @@ rule simulated_posterior_table:
         "python {input[0]} {output}"
 
 # The solver and kernel benchmark tables. The timings depend on the machine, and the
-# banded-vs-full run needs a GPU, so they are run by hand (compute_benchmark_*.py) and
-# their results kept in src/data, with the hardware and versions they were run with.
+# GPU runs need a GPU, so they are run by hand (compute_benchmark_*.py) and their
+# results kept in src/data, with the hardware and versions they were run with.
 rule benchmark_tables:
     input:
         "src/scripts/table_benchmarks.py",
-        "src/data/benchmark_gp_solver.json",
-        "src/data/benchmark_banded_vs_full.json",
+        "src/data/benchmark_gp_solver_cpu.json",
+        "src/data/benchmark_gp_solver_gpu.json",
+        "src/data/benchmark_banded_vs_full_cpu.json",
+        "src/data/benchmark_banded_vs_full_gpu.json",
         "src/data/benchmark_kernel_speed.json",
     output:
         "src/tex/output/gp_solver_speed_benchmark.tex",
         "src/tex/output/banded_vs_full_benchmark.tex",
         "src/tex/output/kernel_speed_benchmark.tex",
         "src/tex/output/gp_solver_loglike_n1000.tex",
+        "src/tex/output/gp_solver_loglike_n1000_gpu.tex",
     shell:
         "python {input[0]} {output}"

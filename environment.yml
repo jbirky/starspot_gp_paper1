@@ -22,4 +22,4 @@ dependencies:
       - tinygp
       - george
       # pinned so the cached snakemake env is rebuilt whenever spotgp is bumped
-      - spotgp @ git+https://github.com/jbirky/spotgp.git@0ce9db3288af4a2c75302b301db8a5da064178ce
+      - spotgp @ git+https://github.com/jbirky/spotgp.git@26ff8596067712a24d5f1abccde3efa81b284934

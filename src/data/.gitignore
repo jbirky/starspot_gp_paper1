@@ -10,6 +10,8 @@
 !results_simulated_dynesty_mean/*/dynesty_results.npz
 !results_simulated_dynesty_mean/*/simulated_data.npz
 !benchmark_tinygp_vs_spotgp.npz
-!benchmark_gp_solver.json
-!benchmark_banded_vs_full.json
+!benchmark_gp_solver_cpu.json
+!benchmark_gp_solver_gpu.json
+!benchmark_banded_vs_full_cpu.json
+!benchmark_banded_vs_full_gpu.json
 !benchmark_kernel_speed.json

@@ -1,0 +1,130 @@
+{
+  "params": {
+    "hparam": {
+      "peq": 5.0,
+      "kappa": 0.0,
+      "inc": 1.5707963267948966,
+      "lspot": 15.0,
+      "tau_spot": 3.0,
+      "sigma_k": 0.01
+    },
+    "n_harmonics": 3,
+    "n_lat": 64,
+    "dt": 0.1,
+    "n_full_max": 10000,
+    "yerr": 0.0001,
+    "n_predict": 200,
+    "n_repeats": 3
+  },
+  "rows": [
+    {
+      "xmax": 10,
+      "N": 100,
+      "solver": "full",
+      "build_s": 0.015810996061190963,
+      "loglike_s": 0.0015749209560453892,
+      "predict_s": 0.020164343994110823
+    },
+    {
+      "xmax": 10,
+      "N": 100,
+      "solver": "banded",
+      "build_s": 0.016727361013181508,
+      "loglike_s": 0.002187164966017008,
+      "predict_s": 0.018935722997412086
+    },
+    {
+      "xmax": 50,
+      "N": 500,
+      "solver": "full",
+      "build_s": 0.016659286920912564,
+      "loglike_s": 0.0027474790113046765,
+      "predict_s": 0.020927147939801216
+    },
+    {
+      "xmax": 50,
+      "N": 500,
+      "solver": "banded",
+      "build_s": 0.019989971071481705,
+      "loglike_s": 0.005782247055321932,
+      "predict_s": 0.02170081704389304
+    },
+    {
+      "xmax": 100,
+      "N": 1000,
+      "solver": "full",
+      "build_s": 0.017928253044374287,
+      "loglike_s": 0.0044015179155394435,
+      "predict_s": 0.02388443099334836
+    },
+    {
+      "xmax": 100,
+      "N": 1000,
+      "solver": "banded",
+      "build_s": 0.02248895401135087,
+      "loglike_s": 0.008009915007278323,
+      "predict_s": 0.02532416593749076
+    },
+    {
+      "xmax": 500,
+      "N": 5000,
+      "solver": "full",
+      "build_s": 0.08795638894662261,
+      "loglike_s": 0.06925441499333829,
+      "predict_s": 0.06448012799955904
+    },
+    {
+      "xmax": 500,
+      "N": 5000,
+      "solver": "banded",
+      "build_s": 0.043389008031226695,
+      "loglike_s": 0.028732342994771898,
+      "predict_s": 0.05435056297574192
+    },
+    {
+      "xmax": 1000,
+      "N": 10000,
+      "solver": "full",
+      "build_s": 0.5382182489847764,
+      "loglike_s": 0.5000570389674976,
+      "predict_s": 0.14551451103761792
+    },
+    {
+      "xmax": 1000,
+      "N": 10000,
+      "solver": "banded",
+      "build_s": 0.0715817550662905,
+      "loglike_s": 0.05724093795288354,
+      "predict_s": 0.09114660997875035
+    },
+    {
+      "xmax": 5000,
+      "N": 50000,
+      "solver": "banded",
+      "build_s": 0.2836019719252363,
+      "loglike_s": 0.2668846939923242,
+      "predict_s": 0.3913423540070653
+    },
+    {
+      "xmax": 10000,
+      "N": 100000,
+      "solver": "banded",
+      "build_s": 0.5809345939196646,
+      "loglike_s": 0.5603845129953697,
+      "predict_s": 0.7926149709383026
+    }
+  ],
+  "provenance": {
+    "date": "2026-11-20T08:11:40+00:00",
+    "script": "compute_benchmark_banded_vs_full.py",
+    "device": "NVIDIA GeForce RTX 5070 Ti",
+    "cpu": "AMD EPYC 7742 64-Core Processor",
+    "python": "3.14.3",
+    "spotgp": "1.3.0",
+    "spotgp_commit": "26ff8596067712a24d5f1abccde3efa81b284934",
+    "jax": "0.9.1",
+    "jaxlib": "0.9.1",
+    "numpy": "2.4.2",
+    "paper_commit": "a48c0aba6007b0e4e9634ae2f9755e02ed4afc54-dirty"
+  }
+}
